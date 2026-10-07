@@ -1,0 +1,32 @@
+<%- include('../partials/shop_top') %>
+<div class="sh-wrap" style="max-width:720px">
+  <h1 class="sh-h2" style="margin-top:26px; font-size:22px">Suivre ma commande</h1>
+  <% if (error) { %><div class="error" role="alert"><%= error %></div><% } %>
+  <form method="POST" action="/suivi" class="sh-box" style="margin-bottom:18px">
+    <input type="hidden" name="_csrf" value="<%= csrf() %>">
+    <div class="grid">
+      <div class="field"><label for="ref">Référence de commande</label><input id="ref" type="text" name="ref" value="<%= ref %>" placeholder="AIA-261007-ABCD" required maxlength="30" autocapitalize="characters"></div>
+      <div class="field"><label for="tel">Téléphone utilisé pour la commande</label><input id="tel" type="tel" inputmode="tel" name="telephone" placeholder="06 12 34 56 78" required maxlength="30"></div>
+    </div>
+    <button type="submit" class="sh-btn">Rechercher</button>
+  </form>
+  <% if (order) { %>
+  <div class="sh-box" style="margin-bottom:44px">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px">
+      <div><span class="sh-cat">Commande</span><div style="font-family:monospace; font-size:18px; letter-spacing:1px"><%= order.ref %></div></div>
+      <span class="pill <%= order.statut %>"><%= fmt.STATUTS[order.statut] %></span>
+    </div>
+    <% const flow = ['nouvelle', 'confirmee', 'expediee', 'livree']; const idx = flow.indexOf(order.statut); %>
+    <% if (idx >= 0) { %>
+      <div class="sh-steps"><% ['Commande reçue', 'Confirmée', 'Expédiée', 'Livrée'].forEach((lbl, i) => { %><div class="<%= i <= idx ? 'done' : '' %>"><i></i><%= lbl %></div><% }) %></div>
+    <% } else { %>
+      <p style="color:var(--muted); font-size:14px">Cette commande est <b style="font-weight:400"><%= order.statut === 'annulee' ? 'annulée' : 'retournée' %></b>. Pour toute question, contactez-nous.</p>
+    <% } %>
+    <h2 class="sh-h2" style="margin-top:18px">Articles</h2>
+    <% order.lignes.forEach(l => { %><div class="sh-sum"><span><%= l.qte %> × <%= l.nom %></span><span><%= fmt.mad(l.prix * l.qte) %></span></div><% }) %>
+    <div class="sh-sum total"><span>Total à payer à la livraison</span><b><%= fmt.mad(order.total) %></b></div>
+    <p style="font-size:12px; color:var(--muted); margin:12px 0 0">Passée le <%= fmt.dateTime(order.createdAt) %></p>
+  </div>
+  <% } %>
+</div>
+<%- include('../partials/shop_bottom') %>

@@ -1,0 +1,31 @@
+<%- include('../partials/admin_top') %>
+<% if (errors.length) { %><div class="error" role="alert"><ul style="margin:0; padding-left:18px"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul></div><% } %>
+<form method="POST" action="/admin/reglages">
+  <input type="hidden" name="_csrf" value="<%= csrf() %>">
+  <div class="card"><h2>Livraison</h2>
+    <div class="grid">
+      <div class="field"><label for="f1">Frais de livraison (DH)</label><input id="f1" type="number" name="fraisLivraison" value="<%= s.fraisLivraison %>" step="0.01" min="0" required></div>
+      <div class="field"><label for="f2">Livraison offerte dès (DH, 0 = jamais)</label><input id="f2" type="number" name="livraisonGratuiteDes" value="<%= s.livraisonGratuiteDes %>" step="0.01" min="0" required></div>
+    </div>
+    <p class="sub">Ces montants s’affichent dans le panier et dans les conditions de vente.</p>
+  </div>
+  <div class="card"><h2>Contact affiché aux clients</h2>
+    <div class="grid">
+      <div class="field"><label for="c1">Téléphone</label><input id="c1" type="tel" name="contactTel" value="<%= s.contactTel %>" placeholder="06 12 34 56 78"></div>
+      <div class="field"><label for="c2">WhatsApp</label><input id="c2" type="tel" name="contactWhatsapp" value="<%= s.contactWhatsapp %>" placeholder="06 12 34 56 78"></div>
+    </div>
+    <div class="field"><label for="c3">Email</label><input id="c3" type="email" name="contactEmail" value="<%= s.contactEmail %>"></div>
+  </div>
+  <div class="card"><h2>Informations légales (mentions légales, CGV)</h2>
+    <div class="field"><label for="l1">Raison sociale</label><input id="l1" type="text" name="raisonSociale" value="<%= s.raisonSociale %>" required></div>
+    <div class="field"><label for="l2">Adresse du siège</label><textarea id="l2" name="adresse" rows="2"><%= s.adresse %></textarea></div>
+    <div class="grid">
+      <div class="field"><label for="l3">RC</label><input id="l3" type="text" name="rc" value="<%= s.rc %>"></div>
+      <div class="field"><label for="l4">ICE</label><input id="l4" type="text" name="ice" value="<%= s.ice %>"></div>
+      <div class="field"><label for="l5">Identifiant fiscal (IF)</label><input id="l5" type="text" name="identifiantFiscal" value="<%= s.identifiantFiscal %>"></div>
+    </div>
+    <p class="sub">Les pages légales sont des modèles : faites-les relire par un professionnel du droit avant l’ouverture au public.</p>
+  </div>
+  <button type="submit">Enregistrer les réglages</button>
+</form>
+<%- include('../partials/admin_bottom') %>

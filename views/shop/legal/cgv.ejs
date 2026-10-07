@@ -1,0 +1,16 @@
+<h2>1. Objet</h2>
+<p>Les présentes conditions régissent les ventes de produits conclues sur ce site par <%- v(s.raisonSociale) %> (« le vendeur ») avec toute personne passant commande (« le client »).</p>
+<h2>2. Produits et prix</h2>
+<p>Les prix sont indiqués en dirhams marocains (DH). <%- todo('prix toutes taxes comprises ou hors taxes') %> Les photographies et descriptions sont données à titre indicatif. Le vendeur peut modifier ses prix à tout moment ; le prix applicable est celui affiché au moment de la commande.</p>
+<h2>3. Commande</h2>
+<p>Le client choisit ses produits, renseigne ses coordonnées de livraison puis valide sa commande. L’enregistrement de la commande donne lieu à une référence de suivi. Le vendeur peut contacter le client par téléphone pour confirmer la commande avant expédition, et se réserve le droit de l’annuler en cas d’indisponibilité d’un produit ou d’informations de livraison erronées.</p>
+<h2>4. Paiement</h2>
+<p>Le paiement s’effectue à la livraison, à la réception de la commande, pour le montant total indiqué (produits et frais de livraison). <%- todo('moyens de paiement acceptés à la livraison') %></p>
+<h2>5. Livraison</h2>
+<p>Les frais de livraison sont de <%= fmt.mad(s.fraisLivraison) %><% if (s.livraisonGratuiteDes > 0) { %>, offerts à partir de <%= fmt.mad(s.livraisonGratuiteDes) %> d’achats<% } %>. <%- todo('zones desservies et délais de livraison') %> Le client doit être joignable au numéro indiqué lors de la commande.</p>
+<h2>6. Retours et rétractation</h2>
+<p>Les conditions de retour et de remboursement sont détaillées sur la page <a href="/page/livraison-retours">Livraison et retours</a>, dans le respect de la réglementation applicable à la protection du consommateur.</p>
+<h2>7. Données personnelles</h2>
+<p>Les données collectées sont traitées conformément à notre <a href="/page/confidentialite">politique de confidentialité</a>.</p>
+<h2>8. Droit applicable et litiges</h2>
+<p>Les présentes conditions sont soumises au droit marocain. <%- todo('juridiction compétente et modalités de règlement amiable des litiges') %></p>

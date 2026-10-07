@@ -1,0 +1,21 @@
+<%- include('../partials/admin_top') %>
+<% warnings.forEach(w => { %><div class="alert"><%= w.text %> <a href="<%= w.link %>">Ouvrir</a></div><% }) %>
+<div class="kpis">
+  <a class="kpi" href="/admin/commandes?statut=nouvelle" style="text-decoration:none; color:inherit"><div class="kpi-label">Nouvelles commandes</div><div class="kpi-value"><%= kpi.nouvelles %></div><div class="kpi-sub">à confirmer par téléphone</div></a>
+  <a class="kpi" href="/admin/commandes?statut=confirmee" style="text-decoration:none; color:inherit"><div class="kpi-label">À expédier</div><div class="kpi-value"><%= kpi.aExpedier %></div><div class="kpi-sub">commandes confirmées</div></a>
+  <div class="kpi"><div class="kpi-label">CA livré ce mois</div><div class="kpi-value"><%= fmt.mad(kpi.caMois).replace(' DH', '') %> <small>DH</small></div><div class="kpi-sub"><%= kpi.livreesMois %> commande<%= kpi.livreesMois > 1 ? 's' : '' %> livrée<%= kpi.livreesMois > 1 ? 's' : '' %></div></div>
+  <div class="kpi"><div class="kpi-label">Stock bas</div><div class="kpi-value"><%= stockBas.length %></div><div class="kpi-sub">produit<%= stockBas.length > 1 ? 's' : '' %> à réapprovisionner</div></div>
+</div>
+<% if (stockBas.length) { %>
+<div class="card"><h2>Stock bas</h2>
+  <% stockBas.forEach(p => { %><div class="roster-item"><span><%= p.nom %></span><span><%= p.stock === 0 ? 'Épuisé' : 'Reste ' + p.stock %> · <a href="/admin/produits/<%= p.id %>">Modifier</a></span></div><% }) %>
+</div>
+<% } %>
+<div class="card"><h2>Dernières commandes</h2>
+  <% if (!recent.length) { %><div class="empty">Aucune commande pour le moment.</div><% } else { %>
+  <table><thead><tr><th>Référence</th><th>Date</th><th>Client</th><th class="num">Total</th><th>Statut</th></tr></thead><tbody>
+    <% recent.forEach(o => { %><tr><td><a href="/admin/commandes/<%= o.id %>"><%= o.ref %></a></td><td><%= fmt.date(o.createdAt) %></td><td><%= o.client.prenom %> <%= o.client.nom %> · <%= o.client.ville %></td><td class="num"><%= fmt.mad(o.total) %></td><td><span class="pill <%= o.statut %>"><%= fmt.STATUTS[o.statut] %></span></td></tr><% }) %>
+  </tbody></table>
+  <% } %>
+</div>
+<%- include('../partials/admin_bottom') %>

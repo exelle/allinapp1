@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<%- include('../partials/head') %>
+</head>
+<body>
+<div class="top-gradient" style="margin:0 0 20px"></div>
+<div class="wrap-narrow">
+  <div class="brand" style="justify-content:center; margin-bottom:18px"><img src="/logo.svg" alt="" width="38" height="38"><div><div class="brand-name">All in app</div><div class="brand-tagline">Back-office boutique</div></div></div>
+  <div class="card">
+    <h1>Connexion</h1>
+    <div class="sub" style="margin-bottom:16px">Accès réservé à l’administrateur de la boutique.</div>
+    <% if (error) { %><div class="error" role="alert"><%= error %></div><% } %>
+    <form method="POST" action="/admin/login">
+      <input type="hidden" name="_csrf" value="<%= csrf() %>">
+      <div class="field"><label for="u">Identifiant</label><input id="u" type="text" name="username" required autofocus autocomplete="username"></div>
+      <div class="field"><label for="p">Mot de passe</label><input id="p" type="password" name="password" required autocomplete="current-password"></div>
+      <button type="submit">Se connecter</button>
+    </form>
+  </div>
+</div>
+<script src="/js/app.js" defer></script>
+</body>
+</html>

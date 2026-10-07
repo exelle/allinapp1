@@ -1,0 +1,22 @@
+<%- include('../partials/shop_top') %>
+<div class="sh-wrap" style="max-width:720px">
+  <div class="sh-ok">
+    <svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="26" fill="none" stroke="#1e7a46" stroke-width="2.5"/><path d="M28 41l8 8 16-17" fill="none" stroke="#1e7a46" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <h1 class="sh-h2" style="font-size:24px; margin:12px 0 4px">Merci <%= order.client.prenom %>, votre commande est enregistrée</h1>
+    <p style="color:var(--muted); margin:0">Notre équipe vous contactera au <b><%= order.client.telephone %></b> pour confirmer la livraison.</p>
+    <div class="sh-ref" aria-label="Référence de commande"><%= order.ref %></div>
+    <p style="font-size:12px; color:var(--muted); margin:0 0 20px">Conservez cette référence : elle vous permet de suivre votre commande.</p>
+  </div>
+  <div class="sh-box" style="margin-bottom:16px">
+    <h2 class="sh-h2">Récapitulatif</h2>
+    <% order.lignes.forEach(l => { %><div class="sh-sum"><span><%= l.qte %> × <%= l.nom %></span><span><%= fmt.mad(l.prix * l.qte) %></span></div><% }) %>
+    <div class="sh-sum"><span>Livraison</span><span><%= order.fraisLivraison === 0 ? 'Offerte' : fmt.mad(order.fraisLivraison) %></span></div>
+    <div class="sh-sum total"><span>Total à payer à la livraison</span><b><%= fmt.mad(order.total) %></b></div>
+    <p style="font-size:13px; color:var(--muted); margin:14px 0 0"><b style="font-weight:400; color:var(--text)">Livraison à :</b> <%= order.client.prenom %> <%= order.client.nom %>, <%= order.client.adresse %>, <%= order.client.ville %></p>
+  </div>
+  <div class="actions-row" style="justify-content:center; margin-bottom:44px">
+    <a class="sh-btn" href="/suivi">Suivre ma commande</a>
+    <a class="sh-btn ghost" href="/">Continuer mes achats</a>
+  </div>
+</div>
+<%- include('../partials/shop_bottom') %>

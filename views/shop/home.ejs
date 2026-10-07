@@ -1,0 +1,31 @@
+<%- include('../partials/shop_top') %>
+<% if (!q && !cat && page === 1) { %>
+<section class="sh-hero"><div class="in">
+  <h1>Tout ce qu’il vous faut, <b>livré chez vous</b>.</h1>
+  <p>Commandez en quelques clics et payez uniquement à la réception.</p>
+  <a class="sh-btn" href="#catalogue">Découvrir la boutique</a>
+  <div class="sh-perks" style="margin-top:18px"><span>Paiement à la livraison</span><span>Aucun compte à créer</span><span>Suivi de commande en ligne</span></div>
+</div></section>
+<% } %>
+<section class="sh-section" id="catalogue"><div class="sh-wrap">
+  <div class="sh-bar">
+    <form method="GET" action="/" class="sh-search" role="search">
+      <% if (cat) { %><input type="hidden" name="cat" value="<%= cat %>"><% } %>
+      <input type="search" name="q" value="<%= q %>" placeholder="Rechercher un produit…" aria-label="Rechercher un produit">
+    </form>
+    <% if (categories.length > 1) { %>
+    <nav class="sh-chips" aria-label="Catégories">
+      <a href="/<%= q ? '?q=' + encodeURIComponent(q) : '' %>" class="<%= !cat ? 'on' : '' %>">Tout</a>
+      <% categories.forEach(c => { %><a href="/?cat=<%= encodeURIComponent(c) %><%= q ? '&q=' + encodeURIComponent(q) : '' %>" class="<%= cat === c ? 'on' : '' %>"><%= c %></a><% }) %>
+    </nav>
+    <% } %>
+  </div>
+  <% if (!products.length) { %>
+    <div class="sh-empty"><%= (q || cat) ? 'Aucun produit ne correspond à votre recherche.' : 'La boutique ouvre bientôt. Revenez nous voir !' %><% if (q || cat) { %><br><br><a class="sh-btn ghost" href="/">Voir tous les produits</a><% } %></div>
+  <% } else { %>
+    <div class="sh-grid"><% products.forEach(p => { %><%- include('../partials/product_card', { p }) %><% }) %></div>
+    <% const pagerBase = '/' + ((cat || q) ? '?' + [cat ? 'cat=' + encodeURIComponent(cat) : '', q ? 'q=' + encodeURIComponent(q) : ''].filter(Boolean).join('&') : ''); %>
+    <%- include('../partials/pager', { pagerBase }) %>
+  <% } %>
+</div></section>
+<%- include('../partials/shop_bottom') %>

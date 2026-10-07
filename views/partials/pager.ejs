@@ -1,0 +1,3 @@
+<% if (pages > 1) { const sep = pagerBase.includes('?') ? '&' : '?'; %>
+<nav class="pager" aria-label="Pagination"><% for (let i = 1; i <= pages; i++) { %><% if (i === page) { %><span class="cur" aria-current="page"><%= i %></span><% } else { %><a href="<%= pagerBase + sep %>page=<%= i %>"><%= i %></a><% } %><% } %></nav>
+<% } %>

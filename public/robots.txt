@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin
+Disallow: /panier
+Disallow: /commande
+Disallow: /suivi

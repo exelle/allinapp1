@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<%- include('../partials/head') %>
+<style>body{background:#fff; padding:24px;} .bl{max-width:720px; margin:0 auto;} .bl table{margin-top:14px;} .big{font-size:22px; color:var(--accent);} @media print{ body{padding:0;} }</style>
+</head>
+<body>
+<div class="bl">
+  <div class="actions-row no-print" style="justify-content:space-between; margin-bottom:16px"><a class="ghost btn" href="/admin/commandes/<%= order.id %>">← Retour</a><button type="button" data-print>🖨 Imprimer</button></div>
+  <div class="brand" style="margin-bottom:18px"><img src="/logo.svg" alt="" width="38" height="38"><div><div class="brand-name"><%= settings.raisonSociale %></div><div class="brand-tagline">Bon de livraison</div></div></div>
+  <h1>Commande <%= order.ref %></h1>
+  <div class="sub">Passée le <%= fmt.dateTime(order.createdAt) %></div>
+  <div class="grid" style="margin-top:16px">
+    <div><label>Destinataire</label><div><b style="font-weight:400"><%= order.client.prenom %> <%= order.client.nom %></b></div><div>Tél. <%= order.client.telephone %></div></div>
+    <div><label>Adresse de livraison</label><div style="white-space:pre-line"><%= order.client.adresse %></div><div><%= order.client.ville %></div></div>
+  </div>
+  <% if (order.client.commentaire) { %><p><label>Commentaire du client</label><span style="white-space:pre-line"><%= order.client.commentaire %></span></p><% } %>
+  <table><thead><tr><th>Produit</th><th class="num">Qté</th><th class="num">Prix</th><th class="num">Total</th></tr></thead><tbody>
+    <% order.lignes.forEach(l => { %><tr><td><%= l.nom %></td><td class="num"><%= l.qte %></td><td class="num"><%= fmt.mad(l.prix) %></td><td class="num"><%= fmt.mad(l.prix * l.qte) %></td></tr><% }) %>
+    <tr><td colspan="3" class="num">Livraison</td><td class="num"><%= order.fraisLivraison === 0 ? 'Offerte' : fmt.mad(order.fraisLivraison) %></td></tr>
+  </tbody></table>
+  <p style="text-align:right; margin-top:16px">Montant à encaisser à la livraison<br><span class="big"><%= fmt.mad(order.total) %></span></p>
+  <p style="margin-top:36px; font-size:12px; color:var(--muted)">Signature du client : ____________________</p>
+</div>
+<script src="/js/app.js" defer></script>
+</body>
+</html>

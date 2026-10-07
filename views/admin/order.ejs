@@ -1,0 +1,59 @@
+<%- include('../partials/admin_top') %>
+<% const nextStep = { nouvelle: ['confirmee', 'Confirmer la commande'], confirmee: ['expediee', 'Marquer comme expédiée'], expediee: ['livree', 'Marquer comme livrée'] }[order.statut]; %>
+<div class="actions-row" style="justify-content:space-between; margin-bottom:14px">
+  <div><a href="/admin/commandes" style="font-size:13px">← Commandes</a>
+    <h1 style="margin-top:6px"><%= order.ref %> <span class="pill <%= order.statut %>" style="vertical-align:middle"><%= fmt.STATUTS[order.statut] %></span></h1>
+    <div class="sub">Passée le <%= fmt.dateTime(order.createdAt) %> · Paiement à la livraison</div></div>
+  <div class="actions-row">
+    <a class="ghost btn" href="tel:<%= order.client.telephone %>">📞 Appeler</a>
+    <a class="ghost btn" href="https://wa.me/<%= fmt.waNumber(order.client.telephone) %>" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="ghost btn" href="/admin/commandes/<%= order.id %>/imprimer" target="_blank" rel="noopener">🖨 Bon de livraison</a>
+  </div>
+</div>
+<% if (errors.length) { %><div class="error" role="alert"><ul style="margin:0; padding-left:18px"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul></div><% } %>
+<div class="two">
+  <div>
+    <div class="card"><h2>Articles</h2>
+      <table><thead><tr><th></th><th>Produit</th><th class="num">Qté</th><th class="num">Total</th></tr></thead><tbody>
+        <% order.lignes.forEach(l => { %><tr><td style="width:56px"><% if (l.thumb) { %><img class="thumb" src="<%= l.thumb %>" alt=""><% } %></td><td><%= l.nom %><br><small style="color:var(--muted)"><%= fmt.mad(l.prix) %></small></td><td class="num"><%= l.qte %></td><td class="num"><%= fmt.mad(l.prix * l.qte) %></td></tr><% }) %>
+      </tbody></table>
+      <div class="sh-sum" style="display:flex; justify-content:space-between; margin-top:10px; font-size:14px"><span>Sous-total</span><span><%= fmt.mad(order.sousTotal) %></span></div>
+      <div style="display:flex; justify-content:space-between; font-size:14px; padding:4px 0"><span>Livraison</span><span><%= order.fraisLivraison === 0 ? 'Offerte' : fmt.mad(order.fraisLivraison) %></span></div>
+      <div style="display:flex; justify-content:space-between; font-size:17px; border-top:1px solid var(--border); margin-top:6px; padding-top:10px"><span>Montant à encaisser</span><b style="font-weight:400; color:var(--accent)"><%= fmt.mad(order.total) %></b></div>
+    </div>
+    <div class="card"><h2>Statut</h2>
+      <% if (nextStep) { %><form method="POST" action="/admin/commandes/<%= order.id %>/statut" style="margin-bottom:12px"><input type="hidden" name="_csrf" value="<%= csrf() %>"><input type="hidden" name="statut" value="<%= nextStep[0] %>"><button type="submit"><%= nextStep[1] %></button></form><% } %>
+      <form method="POST" action="/admin/commandes/<%= order.id %>/statut" class="row">
+        <input type="hidden" name="_csrf" value="<%= csrf() %>">
+        <div class="field"><label for="st">Changer le statut</label><select id="st" name="statut"><% Object.keys(fmt.STATUTS).forEach(k => { %><option value="<%= k %>" <%= k === order.statut ? 'selected' : '' %>><%= fmt.STATUTS[k] %></option><% }) %></select></div>
+        <div class="field"><label for="nt">Note (facultatif)</label><input id="nt" type="text" name="note" maxlength="200"></div>
+        <button type="submit" class="ghost">Enregistrer</button>
+      </form>
+      <p class="sub" style="margin-top:10px">Une commande annulée ou retournée remet automatiquement les articles en stock.</p>
+      <h2 style="margin-top:18px">Historique</h2>
+      <ul class="timeline"><% order.historique.slice().reverse().forEach(h => { %><li><b style="font-weight:400"><%= fmt.STATUTS[h.statut] %></b><% if (h.note) { %> — <%= h.note %><% } %><small><%= fmt.dateTime(h.date) %></small></li><% }) %></ul>
+    </div>
+  </div>
+  <div>
+    <div class="card"><h2>Client et livraison</h2>
+      <form method="POST" action="/admin/commandes/<%= order.id %>/client">
+        <input type="hidden" name="_csrf" value="<%= csrf() %>">
+        <div class="grid">
+          <div class="field"><label for="c1">Prénom</label><input id="c1" type="text" name="prenom" value="<%= order.client.prenom %>" required maxlength="60"></div>
+          <div class="field"><label for="c2">Nom</label><input id="c2" type="text" name="nom" value="<%= order.client.nom %>" required maxlength="60"></div>
+          <div class="field"><label for="c3">Téléphone</label><input id="c3" type="tel" name="telephone" value="<%= order.client.telephone %>" required maxlength="30"></div>
+          <div class="field"><label for="c4">Ville</label><input id="c4" type="text" name="ville" value="<%= order.client.ville %>" required maxlength="60"></div>
+        </div>
+        <div class="field"><label for="c5">Adresse</label><textarea id="c5" name="adresse" rows="3" required maxlength="200"><%= order.client.adresse %></textarea></div>
+        <div class="field"><label for="c6">Commentaire du client</label><textarea id="c6" name="commentaire" rows="2" maxlength="300"><%= order.client.commentaire %></textarea></div>
+        <button type="submit">Enregistrer les coordonnées</button>
+      </form>
+    </div>
+    <div class="card"><h2>Note interne</h2>
+      <form method="POST" action="/admin/commandes/<%= order.id %>/note"><input type="hidden" name="_csrf" value="<%= csrf() %>">
+        <div class="field"><textarea name="noteInterne" rows="3" maxlength="500" aria-label="Note interne" placeholder="Visible uniquement par vous"><%= order.noteInterne %></textarea></div>
+        <button type="submit" class="ghost">Enregistrer la note</button></form>
+    </div>
+  </div>
+</div>
+<%- include('../partials/admin_bottom') %>

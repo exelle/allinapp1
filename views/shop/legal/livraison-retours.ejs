@@ -1,0 +1,9 @@
+<h2>Livraison</h2>
+<p>Frais de livraison : <%= fmt.mad(s.fraisLivraison) %><% if (s.livraisonGratuiteDes > 0) { %>, offerts dès <%= fmt.mad(s.livraisonGratuiteDes) %> d’achats<% } %>.</p>
+<p><%- todo('zones desservies et délais de livraison') %></p>
+<p>Le paiement s’effectue à la réception. Nous vous recommandons de vérifier l’état du colis en présence du livreur.</p>
+<h2>Suivi de commande</h2>
+<p>Votre référence de commande et votre numéro de téléphone vous permettent de suivre l’avancement sur la page <a href="/suivi">Suivre ma commande</a>.</p>
+<h2>Retours et remboursements</h2>
+<p>Les conditions de retour respectent la réglementation en vigueur en matière de protection du consommateur (loi n° 31-08). <%- todo('délai de retour, état des produits acceptés, frais de retour, produits exclus et modalités de remboursement') %></p>
+<p>Pour toute demande, contactez-nous : <%- v(s.contactTel) %> · <%- v(s.contactEmail) %>.</p>

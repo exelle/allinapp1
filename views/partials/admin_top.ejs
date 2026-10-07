@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<%- include('head') %>
+</head>
+<body>
+<div class="top-gradient"></div>
+<div class="wrap" style="max-width:1000px">
+<header>
+  <a class="brand" href="/admin" style="text-decoration:none"><img src="/logo.svg" alt="" width="38" height="38"><div><div class="brand-name">All in app</div><div class="brand-tagline">Back-office boutique</div></div></a>
+  <div class="actions-row">
+    <a class="ghost btn" href="/" target="_blank" rel="noopener">Voir la boutique ↗</a>
+    <form method="POST" action="/admin/logout"><input type="hidden" name="_csrf" value="<%= csrf() %>"><button class="ghost" type="submit">Déconnexion</button></form>
+  </div>
+</header>
+<nav class="admin-nav" aria-label="Administration">
+  <% [['dashboard', '/admin', 'Tableau de bord'], ['orders', '/admin/commandes', 'Commandes'], ['products', '/admin/produits', 'Produits'], ['settings', '/admin/reglages', 'Réglages'], ['password', '/admin/mot-de-passe', 'Mot de passe']].forEach(([k, href, label]) => { %>
+    <a href="<%= href %>" class="<%= nav === k ? 'on' : '' %>"<%- nav === k ? ' aria-current="page"' : '' %>><%= label %></a>
+  <% }) %>
+</nav>
+<% if (flash) { %><div class="<%= flash.type === 'error' ? 'error' : 'success' %>" role="status"><%= flash.msg %></div><% } %>

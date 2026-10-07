@@ -1,0 +1,22 @@
+<%- include('../partials/admin_top') %>
+<% const isNew = !p || !p.id; const val = (k, d) => (p && p[k] !== undefined && p[k] !== null && !(typeof p[k] === 'number' && isNaN(p[k]))) ? p[k] : (d === undefined ? '' : d); %>
+<a href="/admin/produits" style="font-size:13px">← Produits</a>
+<h1 style="margin:6px 0 14px"><%= isNew ? 'Nouveau produit' : 'Modifier le produit' %></h1>
+<% if (errors.length) { %><div class="error" role="alert"><ul style="margin:0; padding-left:18px"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul></div><% } %>
+<form method="POST" action="<%= isNew ? '/admin/produits' : '/admin/produits/' + p.id %>" enctype="multipart/form-data" class="card">
+  <div class="field"><label for="photo">Photo (JPG ou PNG, redimensionnée automatiquement)</label>
+    <% if (!isNew && p.thumb) { %><div style="margin-bottom:8px"><img class="thumb" style="width:90px; height:90px" src="<%= p.thumb %>" alt=""> <label style="display:inline-block; margin-left:10px"><input type="checkbox" name="supprimerPhoto"> Supprimer la photo actuelle</label></div><% } %>
+    <input id="photo" type="file" name="photo" accept="image/jpeg,image/png"></div>
+  <div class="grid">
+    <div class="field"><label for="nom">Nom du produit</label><input id="nom" type="text" name="nom" value="<%= val('nom') %>" required maxlength="100"></div>
+    <div class="field"><label for="cat">Catégorie (facultatif)</label><input id="cat" type="text" name="categorie" value="<%= val('categorie') %>" maxlength="40"></div>
+    <div class="field"><label for="prix">Prix (DH)</label><input id="prix" type="number" name="prix" value="<%= val('prix') %>" step="0.01" min="0.01" required></div>
+    <div class="field"><label for="ap">Ancien prix barré (DH, facultatif)</label><input id="ap" type="number" name="ancienPrix" value="<%= val('ancienPrix') %>" step="0.01" min="0"></div>
+    <div class="field"><label for="stock">Stock (laisser vide = illimité)</label><input id="stock" type="number" name="stock" value="<%= val('stock') %>" step="1" min="0"></div>
+    <div class="field" style="align-self:end"><label style="display:flex; align-items:center; font-size:14px; color:var(--text)"><input type="checkbox" name="actif" <%= (isNew || p.actif) ? 'checked' : '' %>> Visible dans la boutique</label></div>
+  </div>
+  <div class="field"><label for="desc">Description</label><textarea id="desc" name="description" rows="6" maxlength="2000"><%= val('description') %></textarea></div>
+  <input type="hidden" name="_csrf" value="<%= csrf() %>">
+  <button type="submit"><%= isNew ? 'Ajouter le produit' : 'Enregistrer' %></button>
+</form>
+<%- include('../partials/admin_bottom') %>

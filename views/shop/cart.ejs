@@ -1,0 +1,41 @@
+<%- include('../partials/shop_top') %>
+<div class="sh-wrap">
+  <h1 class="sh-h2" style="margin-top:26px; font-size:22px">Votre panier</h1>
+  <% c.notices.forEach(n => { %><div class="alert"><%= n %></div><% }) %>
+  <% if (!c.lines.length) { %>
+    <div class="sh-box sh-empty" style="margin-bottom:40px">Votre panier est vide.<br><br><a class="sh-btn" href="/">Découvrir la boutique</a></div>
+  <% } else { %>
+  <div class="sh-layout">
+    <div class="sh-box">
+      <form method="POST" action="/panier/maj">
+        <input type="hidden" name="_csrf" value="<%= csrf() %>">
+        <% c.lines.forEach(l => { %>
+        <div class="sh-line">
+          <% if (l.product.thumb) { %><img src="<%= l.product.thumb %>" alt="" width="64" height="64"><% } else { %><div class="ph"></div><% } %>
+          <div class="t"><a href="/produit/<%= l.product.id %>"><%= l.product.nom %></a><small><%= fmt.mad(l.product.prix) %> l’unité</small></div>
+          <div class="sh-qty"><button type="button" data-step="-1" aria-label="Diminuer">−</button><input type="number" name="q_<%= l.product.id %>" value="<%= l.qte %>" min="0" max="20" data-autosubmit aria-label="Quantité de <%= l.product.nom %>"><button type="button" data-step="1" aria-label="Augmenter">+</button></div>
+          <div style="width:84px; text-align:right"><%= fmt.mad(l.total) %></div>
+          <button type="submit" form="rm_<%= l.product.id %>" class="ghost sh-x" aria-label="Retirer <%= l.product.nom %>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <% }) %>
+        <noscript><button type="submit" class="sh-btn ghost" style="margin-top:10px">Mettre à jour les quantités</button></noscript>
+      </form>
+      <% c.lines.forEach(l => { %>
+      <form id="rm_<%= l.product.id %>" method="POST" action="/panier/retirer"><input type="hidden" name="_csrf" value="<%= csrf() %>"><input type="hidden" name="productId" value="<%= l.product.id %>"></form>
+      <% }) %>
+    </div>
+    <aside class="sh-box">
+      <h2 class="sh-h2">Récapitulatif</h2>
+      <div class="sh-sum"><span>Sous-total</span><span><%= fmt.mad(c.sousTotal) %></span></div>
+      <div class="sh-sum"><span>Livraison</span><span><%= c.frais === 0 ? 'Offerte' : fmt.mad(c.frais) %></span></div>
+      <% if (c.resteGratuit > 0) { %>
+      <div class="sh-free">Plus que <b><%= fmt.mad(c.resteGratuit) %></b> pour la livraison offerte<i><b style="width:<%= Math.min(100, Math.round(c.sousTotal / settings.livraisonGratuiteDes * 100)) %>%"></b></i></div>
+      <% } %>
+      <div class="sh-sum total"><span>Total à payer à la livraison</span><b><%= fmt.mad(c.total) %></b></div>
+      <a class="sh-btn block" style="margin-top:14px" href="/commande">Passer la commande</a>
+      <a class="sh-btn ghost block" style="margin-top:8px" href="/">Continuer mes achats</a>
+    </aside>
+  </div>
+  <% } %>
+</div>
+<%- include('../partials/shop_bottom') %>

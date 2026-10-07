@@ -1,0 +1,19 @@
+<%- include('../partials/admin_top') %>
+<div class="tabs">
+  <a href="/admin/commandes<%= q ? '?q=' + encodeURIComponent(q) : '' %>" class="<%= !statut ? 'active' : '' %>">Toutes (<%= counts.tous %>)</a>
+  <% Object.keys(fmt.STATUTS).forEach(k => { %><a href="/admin/commandes?statut=<%= k %><%= q ? '&q=' + encodeURIComponent(q) : '' %>" class="<%= statut === k ? 'active' : '' %>"><%= fmt.STATUTS[k] %> (<%= counts[k] %>)</a><% }) %>
+</div>
+<div class="card">
+  <div class="actions-row" style="justify-content:space-between; margin-bottom:6px">
+    <form method="GET" action="/admin/commandes" class="actions-row"><% if (statut) { %><input type="hidden" name="statut" value="<%= statut %>"><% } %><input type="search" name="q" value="<%= q %>" placeholder="Référence, nom, téléphone, ville…" aria-label="Rechercher une commande" style="min-width:260px"><button type="submit" class="ghost">Rechercher</button></form>
+    <a class="ghost btn" href="/admin/export.csv">⬇ Exporter en CSV</a>
+  </div>
+  <% if (!orders.length) { %><div class="empty">Aucune commande.</div><% } else { %>
+  <table><thead><tr><th>Référence</th><th>Date</th><th>Client</th><th>Téléphone</th><th class="num">Total</th><th>Statut</th></tr></thead><tbody>
+    <% orders.forEach(o => { %><tr><td><a href="/admin/commandes/<%= o.id %>"><%= o.ref %></a></td><td><%= fmt.date(o.createdAt) %></td><td><%= o.client.prenom %> <%= o.client.nom %><br><small style="color:var(--muted)"><%= o.client.ville %></small></td><td><%= o.client.telephone %></td><td class="num"><%= fmt.mad(o.total) %></td><td><span class="pill <%= o.statut %>"><%= fmt.STATUTS[o.statut] %></span></td></tr><% }) %>
+  </tbody></table>
+  <% } %>
+</div>
+<% const pagerBase = '/admin/commandes' + ((statut || q) ? '?' + [statut ? 'statut=' + statut : '', q ? 'q=' + encodeURIComponent(q) : ''].filter(Boolean).join('&') : ''); %>
+<%- include('../partials/pager', { pagerBase }) %>
+<%- include('../partials/admin_bottom') %>
