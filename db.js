@@ -9,7 +9,7 @@ const { DATA_DIR, IS_PROD } = require('./config');
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 const db = low(new FileSync(path.join(DATA_DIR, 'db.json')));
-db.defaults({ settings: {}, admins: [], products: [], orders: [] }).write();
+db.defaults({ settings: {}, admins: [], products: [], orders: [], banners: [] }).write();
 
 // Valeurs par défaut : à vérifier par l'administrateur dans « Réglages ».
 const DEFAULT_SETTINGS = {

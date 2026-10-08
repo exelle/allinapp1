@@ -5,7 +5,7 @@
   <table><thead><tr><th></th><th>Produit</th><th class="num">Prix</th><th class="num">Stock</th><th>Visibilité</th><th></th></tr></thead><tbody>
     <% products.forEach(p => { %><tr>
       <td style="width:56px"><% if (p.thumb) { %><img class="thumb" src="<%= p.thumb %>" alt=""><% } else { %><div class="thumb"></div><% } %></td>
-      <td><%= p.nom %><% if (p.categorie) { %><br><small style="color:var(--muted)"><%= p.categorie %></small><% } %></td>
+      <td><%= p.nom %><br><small style="color:var(--muted)"><%= catLabel(p.categorie) %><%= p.nomAr ? ' · عربي ✓' : '' %></small></td>
       <td class="num"><%= fmt.mad(p.prix) %></td>
       <td class="num"><%= p.stock === null || p.stock === undefined ? 'Illimité' : p.stock %></td>
       <td><span class="pill <%= p.actif ? 'livree' : 'retournee' %>"><%= p.actif ? 'En ligne' : 'Masqué' %></span></td>

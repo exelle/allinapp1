@@ -1,0 +1,5 @@
+<nav class="sh-wrap sh-cats" aria-label="<%= t('cats_aria') %>">
+  <% cats.forEach(c => { const on = cat === c.key; %>
+  <a class="sh-cat-tile<%= on ? ' on' : '' %>" href="<%= on ? '/' : '/?cat=' + c.key %>"<%- on ? ' aria-current="true"' : '' %>><span class="ico"><%- c.icon %></span><span class="lbl"><%= t('cat_' + c.key) %></span></a>
+  <% }) %>
+</nav>

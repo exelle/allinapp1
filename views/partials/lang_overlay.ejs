@@ -1,0 +1,16 @@
+<div class="lang-ov" role="dialog" aria-modal="true" aria-labelledby="ovTitle">
+  <div class="lang-a" aria-hidden="true">
+    <img class="lang-logo" src="/logo.svg" alt="" width="84" height="84">
+    <div class="lang-name">All in app</div>
+    <div class="lang-tag"><% [...'The all in one startup'].forEach((ch, i) => { %><span style="animation-delay:<%= (0.9 + i * 0.035).toFixed(2) %>s"><%= ch === ' ' ? '\u00A0' : ch %></span><% }) %></div>
+  </div>
+  <div class="lang-b">
+    <img class="lang-logo-s" src="/logo.svg" alt="" width="56" height="56">
+    <h1 id="ovTitle" class="lang-h"><span lang="fr">Choisissez votre langue</span><span lang="ar" dir="rtl">اختر لغتك</span></h1>
+    <div class="lang-btns">
+      <a class="lang-btn" href="/langue/fr?next=<%= encodeURIComponent(currentUrl) %>" lang="fr" hreflang="fr">Français</a>
+      <a class="lang-btn" href="/langue/ar?next=<%= encodeURIComponent(currentUrl) %>" lang="ar" hreflang="ar" dir="rtl">العربية</a>
+    </div>
+    <p class="lang-note"><span lang="fr">Vous pourrez la modifier à tout moment.</span><span lang="ar" dir="rtl">يمكنك تغييرها في أي وقت.</span></p>
+  </div>
+</div>

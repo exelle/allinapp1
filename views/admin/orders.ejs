@@ -10,7 +10,7 @@
   </div>
   <% if (!orders.length) { %><div class="empty">Aucune commande.</div><% } else { %>
   <table><thead><tr><th>Référence</th><th>Date</th><th>Client</th><th>Téléphone</th><th class="num">Total</th><th>Statut</th></tr></thead><tbody>
-    <% orders.forEach(o => { %><tr><td><a href="/admin/commandes/<%= o.id %>"><%= o.ref %></a></td><td><%= fmt.date(o.createdAt) %></td><td><%= o.client.prenom %> <%= o.client.nom %><br><small style="color:var(--muted)"><%= o.client.ville %></small></td><td><%= o.client.telephone %></td><td class="num"><%= fmt.mad(o.total) %></td><td><span class="pill <%= o.statut %>"><%= fmt.STATUTS[o.statut] %></span></td></tr><% }) %>
+    <% orders.forEach(o => { %><tr><td><a href="/admin/commandes/<%= o.id %>"><%= o.ref %></a><%= o.lang === 'ar' ? ' · AR' : '' %></td><td><%= fmt.date(o.createdAt) %></td><td><%= o.client.prenom %> <%= o.client.nom %><br><small style="color:var(--muted)"><%= o.client.ville %></small></td><td><%= o.client.telephone %></td><td class="num"><%= fmt.mad(o.total) %></td><td><span class="pill <%= o.statut %>"><%= fmt.STATUTS[o.statut] %></span></td></tr><% }) %>
   </tbody></table>
   <% } %>
 </div>

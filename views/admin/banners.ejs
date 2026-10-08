@@ -1,0 +1,23 @@
+<%- include('../partials/admin_top') %>
+<div class="card">
+  <div class="actions-row" style="justify-content:space-between; margin-bottom:8px"><h2 style="margin:0">Bannières promotionnelles (<%= banners.length %>)</h2><a class="btn" href="/admin/bannieres/nouveau">+ Nouvelle bannière</a></div>
+  <p class="sub">Trois emplacements : la <b style="font-weight:400">barre</b> en haut de toutes les pages, la <b style="font-weight:400">grande bannière</b> défilante de l’accueil, et le <b style="font-weight:400">bandeau</b> (accueil, fiche produit, panier, confirmation). Vous pouvez programmer une promotion avec une date de début et de fin.</p>
+  <% if (!banners.length) { %><div class="empty">Aucune bannière. La barre affiche alors « Paiement à la livraison » et la livraison offerte.</div><% } else { %>
+  <table><thead><tr><th></th><th>Bannière</th><th>Emplacement</th><th class="num">Ordre</th><th>Période</th><th>Statut</th><th></th></tr></thead><tbody>
+    <% const stClass = { active: 'livree', programmee: 'confirmee', expiree: 'annulee', desactivee: 'retournee' }; const stLabel = { active: 'En ligne', programmee: 'Programmée', expiree: 'Expirée', desactivee: 'Désactivée' }; %>
+    <% banners.forEach(b => { %><tr>
+      <td style="width:86px"><% if (b.image) { %><img class="thumb" style="width:76px; height:34px" src="<%= b.image %>" alt=""><% } else { %><div class="thumb bn-<%= b.couleur %>" style="width:76px; height:34px"></div><% } %></td>
+      <td><%= b.titre %><% if (b.titreAr) { %><br><small dir="rtl" lang="ar" style="color:var(--muted)"><%= b.titreAr %></small><% } %></td>
+      <td><%= placements[b.emplacement] ? placements[b.emplacement].split(' (')[0] : b.emplacement %></td>
+      <td class="num"><%= b.ordre %></td>
+      <td><small style="color:var(--muted)"><%= b.debut || b.fin ? (b.debut || '…') + ' → ' + (b.fin || '…') : 'Permanente' %></small></td>
+      <td><span class="pill <%= stClass[b.statut] %>"><%= stLabel[b.statut] %></span></td>
+      <td style="white-space:nowrap">
+        <a class="ghost btn" style="padding:4px 10px; font-size:12px" href="/admin/bannieres/<%= b.id %>">Modifier</a>
+        <form class="inline" method="POST" action="/admin/bannieres/<%= b.id %>/basculer"><input type="hidden" name="_csrf" value="<%= csrf() %>"><button type="submit" class="ghost" style="padding:4px 10px; font-size:12px"><%= b.actif ? 'Désactiver' : 'Activer' %></button></form>
+        <form class="inline" method="POST" action="/admin/bannieres/<%= b.id %>/supprimer" data-confirm="Supprimer cette bannière définitivement ?"><input type="hidden" name="_csrf" value="<%= csrf() %>"><button type="submit" class="secondary" style="padding:4px 10px; font-size:12px">Supprimer</button></form>
+      </td></tr><% }) %>
+  </tbody></table>
+  <% } %>
+</div>
+<%- include('../partials/admin_bottom') %>

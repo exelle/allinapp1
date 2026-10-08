@@ -1,5 +1,5 @@
-const CACHE = 'aia-boutique-static-v1';
-const STATIC = ['/css/app.css', '/css/shop.css', '/js/app.js', '/logo.svg', '/icons/icon-192.png'];
+const CACHE = 'aia-boutique-static-v2';
+const STATIC = ['/css/app.css', '/css/shop.css', '/js/app.js', '/js/promo.js', '/logo.svg', '/icons/icon-192.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(STATIC))); self.skipWaiting(); });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))));

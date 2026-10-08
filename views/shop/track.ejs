@@ -1,31 +1,31 @@
 <%- include('../partials/shop_top') %>
 <div class="sh-wrap" style="max-width:720px">
-  <h1 class="sh-h2" style="margin-top:26px; font-size:22px">Suivre ma commande</h1>
+  <h1 class="sh-h2" style="margin-top:26px; font-size:22px"><%= t('track_title') %></h1>
   <% if (error) { %><div class="error" role="alert"><%= error %></div><% } %>
   <form method="POST" action="/suivi" class="sh-box" style="margin-bottom:18px">
     <input type="hidden" name="_csrf" value="<%= csrf() %>">
     <div class="grid">
-      <div class="field"><label for="ref">Référence de commande</label><input id="ref" type="text" name="ref" value="<%= ref %>" placeholder="AIA-261007-ABCD" required maxlength="30" autocapitalize="characters"></div>
-      <div class="field"><label for="tel">Téléphone utilisé pour la commande</label><input id="tel" type="tel" inputmode="tel" name="telephone" placeholder="06 12 34 56 78" required maxlength="30"></div>
+      <div class="field"><label for="ref"><%= t('ref_label') %></label><input id="ref" type="text" dir="ltr" name="ref" value="<%= ref %>" placeholder="AIA-261007-ABCD" required maxlength="30" autocapitalize="characters"></div>
+      <div class="field"><label for="tel"><%= t('phone_used') %></label><input id="tel" type="tel" inputmode="tel" dir="ltr" name="telephone" placeholder="06 12 34 56 78" required maxlength="30"></div>
     </div>
-    <button type="submit" class="sh-btn">Rechercher</button>
+    <button type="submit" class="sh-btn"><%= t('search') %></button>
   </form>
   <% if (order) { %>
   <div class="sh-box" style="margin-bottom:44px">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px">
-      <div><span class="sh-cat">Commande</span><div style="font-family:monospace; font-size:18px; letter-spacing:1px"><%= order.ref %></div></div>
-      <span class="pill <%= order.statut %>"><%= fmt.STATUTS[order.statut] %></span>
+      <div><span class="sh-cat"><%= t('order_word') %></span><div dir="ltr" style="font-family:monospace; font-size:18px; letter-spacing:1px; text-align:start"><%= order.ref %></div></div>
+      <span class="pill <%= order.statut %>"><%= t('status_' + order.statut) %></span>
     </div>
     <% const flow = ['nouvelle', 'confirmee', 'expediee', 'livree']; const idx = flow.indexOf(order.statut); %>
     <% if (idx >= 0) { %>
-      <div class="sh-steps"><% ['Commande reçue', 'Confirmée', 'Expédiée', 'Livrée'].forEach((lbl, i) => { %><div class="<%= i <= idx ? 'done' : '' %>"><i></i><%= lbl %></div><% }) %></div>
+      <div class="sh-steps"><% [t('step_received'), t('step_confirmee'), t('step_expediee'), t('step_livree')].forEach((lbl, i) => { %><div class="<%= i <= idx ? 'done' : '' %>"><i></i><%= lbl %></div><% }) %></div>
     <% } else { %>
-      <p style="color:var(--muted); font-size:14px">Cette commande est <b style="font-weight:400"><%= order.statut === 'annulee' ? 'annulée' : 'retournée' %></b>. Pour toute question, contactez-nous.</p>
+      <p style="color:var(--muted); font-size:14px"><%- th('cancelled_msg', { state: t('state_' + order.statut) }) %></p>
     <% } %>
-    <h2 class="sh-h2" style="margin-top:18px">Articles</h2>
-    <% order.lignes.forEach(l => { %><div class="sh-sum"><span><%= l.qte %> × <%= l.nom %></span><span><%= fmt.mad(l.prix * l.qte) %></span></div><% }) %>
-    <div class="sh-sum total"><span>Total à payer à la livraison</span><b><%= fmt.mad(order.total) %></b></div>
-    <p style="font-size:12px; color:var(--muted); margin:12px 0 0">Passée le <%= fmt.dateTime(order.createdAt) %></p>
+    <h2 class="sh-h2" style="margin-top:18px"><%= t('items') %></h2>
+    <% order.lignes.forEach(l => { %><div class="sh-sum"><span><%= l.qte %> × <%= (lang === 'ar' && l.nomAr) || l.nom %></span><span><%= mad(l.prix * l.qte) %></span></div><% }) %>
+    <div class="sh-sum total"><span><%= t('total_cod') %></span><b><%= mad(order.total) %></b></div>
+    <p style="font-size:12px; color:var(--muted); margin:12px 0 0"><%= t('placed', { date: dt(order.createdAt) }) %></p>
   </div>
   <% } %>
 </div>

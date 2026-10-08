@@ -1,0 +1,39 @@
+<%- include('../partials/admin_top') %>
+<% const isNew = !b || !b.id; const val = (k, d) => (b && b[k] !== undefined && b[k] !== null) ? b[k] : (d === undefined ? '' : d); %>
+<a href="/admin/bannieres" style="font-size:13px">← Bannières</a>
+<h1 style="margin:6px 0 14px"><%= isNew ? 'Nouvelle bannière' : 'Modifier la bannière' %></h1>
+<% if (errors.length) { %><div class="error" role="alert"><ul style="margin:0; padding-left:18px"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul></div><% } %>
+<form method="POST" action="<%= isNew ? '/admin/bannieres' : '/admin/bannieres/' + b.id %>" enctype="multipart/form-data">
+  <div class="card"><h2>Emplacement et affichage</h2>
+    <div class="grid">
+      <div class="field"><label for="e">Emplacement</label><select id="e" name="emplacement"><% Object.keys(placements).forEach(k => { %><option value="<%= k %>" <%= val('emplacement') === k ? 'selected' : '' %>><%= placements[k] %></option><% }) %></select></div>
+      <div class="field"><label for="o">Ordre d’affichage (0 = en premier)</label><input id="o" type="number" name="ordre" value="<%= val('ordre', 0) %>" min="0" max="999"></div>
+      <div class="field"><label for="d1">Début (facultatif)</label><input id="d1" type="date" name="debut" value="<%= val('debut') %>"></div>
+      <div class="field"><label for="d2">Fin (facultatif, incluse)</label><input id="d2" type="date" name="fin" value="<%= val('fin') %>"></div>
+    </div>
+    <div class="field"><label style="display:flex; align-items:center; font-size:14px; color:var(--text)"><input type="checkbox" name="actif" <%= val('actif', true) ? 'checked' : '' %>> Bannière active</label></div>
+    <p class="sub">Sans date, la bannière est permanente. Avec des dates, elle apparaît et disparaît toute seule.</p>
+  </div>
+  <div class="card"><h2>Contenu</h2>
+    <div class="grid">
+      <div class="field"><label for="t1">Titre (français)</label><input id="t1" type="text" name="titre" value="<%= val('titre') %>" maxlength="90" required></div>
+      <div class="field"><label for="t2">Titre (arabe)</label><input id="t2" type="text" dir="rtl" lang="ar" name="titreAr" value="<%= val('titreAr') %>" maxlength="90"></div>
+      <div class="field"><label for="s1">Sous-titre (français)</label><input id="s1" type="text" name="sousTitre" value="<%= val('sousTitre') %>" maxlength="140"></div>
+      <div class="field"><label for="s2">Sous-titre (arabe)</label><input id="s2" type="text" dir="rtl" lang="ar" name="sousTitreAr" value="<%= val('sousTitreAr') %>" maxlength="140"></div>
+      <div class="field"><label for="b1">Texte du bouton (français)</label><input id="b1" type="text" name="bouton" value="<%= val('bouton') %>" maxlength="30"></div>
+      <div class="field"><label for="b2">Texte du bouton (arabe)</label><input id="b2" type="text" dir="rtl" lang="ar" name="boutonAr" value="<%= val('boutonAr') %>" maxlength="30"></div>
+    </div>
+    <div class="field"><label for="l">Lien au clic (facultatif)</label><input id="l" type="text" dir="ltr" name="lien" value="<%= val('lien') %>" maxlength="300" placeholder="/?cat=skincare   ou   /produit/…   ou   https://…"></div>
+    <p class="sub">Si l’arabe est vide, la version française est affichée. La barre n’utilise que le titre.</p>
+  </div>
+  <div class="card"><h2>Visuel</h2>
+    <div class="field"><label for="c">Couleur (fond sans image, et barre)</label><select id="c" name="couleur"><% Object.keys(colors).forEach(k => { %><option value="<%= k %>" <%= val('couleur', 'violet') === k ? 'selected' : '' %>><%= colors[k] %></option><% }) %></select></div>
+    <div class="field"><label for="img">Image (JPG ou PNG) — grande bannière : 1600 × 500 px conseillé ; bandeau : 1600 × 300 px</label>
+      <% if (!isNew && b.image) { %><div style="margin-bottom:8px"><img class="thumb" style="width:160px; height:60px" src="<%= b.image %>" alt=""> <label style="display:inline-block; margin-left:10px"><input type="checkbox" name="supprimerImage"> Supprimer l’image actuelle</label></div><% } %>
+      <input id="img" type="file" name="image" accept="image/jpeg,image/png"></div>
+    <p class="sub">Gardez le texte important vers le centre de l’image : elle est recadrée selon la taille de l’écran. Le texte est affiché par-dessus, avec un voile sombre pour rester lisible. La barre n’a pas d’image.</p>
+  </div>
+  <input type="hidden" name="_csrf" value="<%= csrf() %>">
+  <button type="submit"><%= isNew ? 'Ajouter la bannière' : 'Enregistrer' %></button>
+</form>
+<%- include('../partials/admin_bottom') %>

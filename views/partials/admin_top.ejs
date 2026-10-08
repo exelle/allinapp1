@@ -14,7 +14,7 @@
   </div>
 </header>
 <nav class="admin-nav" aria-label="Administration">
-  <% [['dashboard', '/admin', 'Tableau de bord'], ['orders', '/admin/commandes', 'Commandes'], ['products', '/admin/produits', 'Produits'], ['settings', '/admin/reglages', 'Réglages'], ['password', '/admin/mot-de-passe', 'Mot de passe']].forEach(([k, href, label]) => { %>
+  <% [['dashboard', '/admin', 'Tableau de bord'], ['orders', '/admin/commandes', 'Commandes'], ['products', '/admin/produits', 'Produits'], ['banners', '/admin/bannieres', 'Bannières'], ['settings', '/admin/reglages', 'Réglages'], ['password', '/admin/mot-de-passe', 'Mot de passe']].forEach(([k, href, label]) => { %>
     <a href="<%= href %>" class="<%= nav === k ? 'on' : '' %>"<%- nav === k ? ' aria-current="page"' : '' %>><%= label %></a>
   <% }) %>
 </nav>

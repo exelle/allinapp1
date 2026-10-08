@@ -1,34 +1,34 @@
 <%- include('../partials/shop_top') %>
 <div class="sh-wrap">
-  <h1 class="sh-h2" style="margin-top:26px; font-size:22px">Finaliser ma commande</h1>
-  <% if (errors.length) { %><div class="error" role="alert"><ul style="margin:0; padding-left:18px"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul></div><% } %>
+  <h1 class="sh-h2" style="margin-top:26px; font-size:22px"><%= t('co_h1') %></h1>
+  <% if (errors.length) { %><div class="error" role="alert"><ul style="margin:0; padding-inline-start:18px"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul></div><% } %>
   <div class="sh-layout">
     <form method="POST" action="/commande" class="sh-box" data-once>
       <input type="hidden" name="_csrf" value="<%= csrf() %>">
       <div class="hp" aria-hidden="true"><label>Ne pas remplir <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-      <h2 class="sh-h2">Vos coordonnées de livraison</h2>
+      <h2 class="sh-h2"><%= t('co_details') %></h2>
       <div class="grid">
-        <div class="field"><label for="prenom">Prénom</label><input id="prenom" type="text" name="prenom" value="<%= values.prenom || '' %>" required maxlength="60" autocomplete="given-name"></div>
-        <div class="field"><label for="nom">Nom</label><input id="nom" type="text" name="nom" value="<%= values.nom || '' %>" required maxlength="60" autocomplete="family-name"></div>
-        <div class="field"><label for="telephone">Téléphone</label><input id="telephone" type="tel" inputmode="tel" name="telephone" value="<%= values.telephone || '' %>" required maxlength="30" placeholder="06 12 34 56 78" autocomplete="tel"></div>
-        <div class="field"><label for="ville">Ville</label><input id="ville" type="text" name="ville" value="<%= values.ville || '' %>" required maxlength="60" autocomplete="address-level2"></div>
+        <div class="field"><label for="prenom"><%= t('first_name') %></label><input id="prenom" type="text" name="prenom" value="<%= values.prenom || '' %>" required maxlength="60" autocomplete="given-name"></div>
+        <div class="field"><label for="nom"><%= t('last_name') %></label><input id="nom" type="text" name="nom" value="<%= values.nom || '' %>" required maxlength="60" autocomplete="family-name"></div>
+        <div class="field"><label for="telephone"><%= t('phone') %></label><input id="telephone" type="tel" inputmode="tel" dir="ltr" name="telephone" value="<%= values.telephone || '' %>" required maxlength="30" placeholder="06 12 34 56 78" autocomplete="tel"></div>
+        <div class="field"><label for="ville"><%= t('city') %></label><input id="ville" type="text" name="ville" value="<%= values.ville || '' %>" required maxlength="60" autocomplete="address-level2"></div>
       </div>
-      <div class="field"><label for="adresse">Adresse de livraison</label><textarea id="adresse" name="adresse" rows="3" required maxlength="200" placeholder="Rue, quartier, immeuble, repères…"><%= values.adresse || '' %></textarea></div>
-      <div class="field"><label for="commentaire">Commentaire (facultatif)</label><textarea id="commentaire" name="commentaire" rows="2" maxlength="300" placeholder="Horaires de livraison, précisions…"><%= values.commentaire || '' %></textarea></div>
-      <h2 class="sh-h2" style="margin-top:18px">Mode de paiement</h2>
-      <div class="sh-pay"><span aria-hidden="true">💵</span><div>Paiement à la livraison<small>Vous réglez le montant de <%= fmt.mad(c.total) %> à la réception de votre commande.</small></div></div>
-      <div class="field" style="margin-top:16px"><label style="display:flex; align-items:flex-start; gap:8px; font-size:13px"><input type="checkbox" name="consent" value="1" required style="margin-top:3px"><span>J’ai lu et j’accepte les <a href="/page/cgv" target="_blank" rel="noopener">conditions générales de vente</a> et la <a href="/page/confidentialite" target="_blank" rel="noopener">politique de confidentialité</a>.</span></label></div>
-      <button type="submit" class="sh-btn block">Confirmer la commande</button>
+      <div class="field"><label for="adresse"><%= t('address') %></label><textarea id="adresse" name="adresse" rows="3" required maxlength="200" placeholder="<%= t('address_ph') %>"><%= values.adresse || '' %></textarea></div>
+      <div class="field"><label for="commentaire"><%= t('comment') %></label><textarea id="commentaire" name="commentaire" rows="2" maxlength="300" placeholder="<%= t('comment_ph') %>"><%= values.commentaire || '' %></textarea></div>
+      <h2 class="sh-h2" style="margin-top:18px"><%= t('pay_mode') %></h2>
+      <div class="sh-pay"><span aria-hidden="true">💵</span><div><%= t('cod_title') %><small><%= t('cod_desc', { amount: mad(c.total) }) %></small></div></div>
+      <div class="field" style="margin-top:16px"><label style="display:flex; align-items:flex-start; gap:8px; font-size:13px"><input type="checkbox" name="consent" value="1" required style="margin-top:3px"><span><%- t('consent') %></span></label></div>
+      <button type="submit" class="sh-btn block"><%= t('confirm_order') %></button>
     </form>
     <aside class="sh-box">
-      <h2 class="sh-h2">Votre commande</h2>
+      <h2 class="sh-h2"><%= t('your_order') %></h2>
       <% c.lines.forEach(l => { %>
-      <div class="sh-line" style="padding:8px 0"><% if (l.product.thumb) { %><img src="<%= l.product.thumb %>" alt="" width="64" height="64" style="width:48px; height:48px"><% } else { %><div class="ph" style="width:48px; height:48px"></div><% } %><div class="t"><span style="font-size:13px"><%= l.product.nom %></span><small>Quantité : <%= l.qte %></small></div><div style="font-size:13px"><%= fmt.mad(l.total) %></div></div>
+      <div class="sh-line" style="padding:8px 0"><% if (l.product.thumb) { %><img src="<%= l.product.thumb %>" alt="" width="64" height="64" style="width:48px; height:48px"><% } else { %><div class="ph" style="width:48px; height:48px"></div><% } %><div class="t"><span style="font-size:13px"><%= pn(l.product) %></span><small><%= t('quantity_n', { n: l.qte }) %></small></div><div style="font-size:13px"><%= mad(l.total) %></div></div>
       <% }) %>
-      <div class="sh-sum" style="margin-top:8px"><span>Sous-total</span><span><%= fmt.mad(c.sousTotal) %></span></div>
-      <div class="sh-sum"><span>Livraison</span><span><%= c.frais === 0 ? 'Offerte' : fmt.mad(c.frais) %></span></div>
-      <div class="sh-sum total"><span>Total à payer</span><b><%= fmt.mad(c.total) %></b></div>
-      <a href="/panier" style="font-size:13px; display:inline-block; margin-top:10px">← Modifier mon panier</a>
+      <div class="sh-sum" style="margin-top:8px"><span><%= t('subtotal') %></span><span><%= mad(c.sousTotal) %></span></div>
+      <div class="sh-sum"><span><%= t('delivery') %></span><span><%= c.frais === 0 ? t('free') : mad(c.frais) %></span></div>
+      <div class="sh-sum total"><span><%= t('total_pay') %></span><b><%= mad(c.total) %></b></div>
+      <a href="/panier" style="font-size:13px; display:inline-block; margin-top:10px"><%= lang === 'ar' ? '→' : '←' %> <%= t('edit_cart') %></a>
     </aside>
   </div>
 </div>

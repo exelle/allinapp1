@@ -1,0 +1,5 @@
+<% const tag = b.lien ? 'a' : 'div'; %>
+<<%= tag %> class="sh-inline bn-<%= b.couleur %>"<% if (b.lien) { %> href="<%= b.lien %>"<%- linkAttrs(b.lien) %><% } %>>
+  <% if (b.image) { %><img class="sh-bn-img" src="<%= b.image %>" alt=""><span class="sh-bn-shade"></span><% } %>
+  <span class="sh-bn-txt"><b class="sh-bn-title"><%= bl(b, 'titre') %></b><% if (bl(b, 'sousTitre')) { %><span class="sh-bn-sub"><%= bl(b, 'sousTitre') %></span><% } %><% if (bl(b, 'bouton')) { %><span class="sh-btn sh-bn-btn"><%= bl(b, 'bouton') %></span><% } %></span>
+</<%= tag %>>

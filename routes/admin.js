@@ -8,10 +8,23 @@ const { requireAdmin } = require('../middleware/auth');
 const { verify } = require('../lib/csrf');
 const { clean, cleanMultiline, normalizePhone, isId, validateClient } = require('../lib/validate');
 const { changeStatus, STATUT_KEYS } = require('../lib/orders');
-const { saveProductImage, removeProductImage } = require('../lib/images');
+const { saveProductImage, removeProductImage, saveBannerImage, removeBannerImage } = require('../lib/images');
 const { STATUTS } = require('../lib/format');
+const fmtLib = require('../lib/format');
+const { make } = require('../lib/i18n');
+const { CATEGORIES, KEYS: CAT_KEYS } = require('../lib/categories');
+const bn = require('../lib/banners');
 
 const router = express.Router();
+// Le back-office reste toujours en français, quelle que soit la langue choisie dans la vitrine.
+const FR = make('fr');
+router.use((req, res, next) => {
+  Object.assign(res.locals, {
+    lang: 'fr', dir: 'ltr', langChosen: true, t: FR.t, th: FR.th, cats: CATEGORIES,
+    mad: (n) => fmtLib.mad(n), catLabel: (k) => FR.t('cat_' + (CAT_KEYS.includes(k) ? k : 'general')), bars: []
+  });
+  next();
+});
 const DUMMY_HASH = bcrypt.hashSync('mot-de-passe-factice', 10); // égalise le temps de réponse
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false,
   handler: (req, res) => res.status(429).render('admin/login', { title: 'Connexion', noindex: true, error: 'Trop de tentatives. Réessayez dans quelques minutes.' }) });
@@ -154,7 +167,9 @@ function readProductForm(b, existing) {
   const stockRaw = String(b.stock == null ? '' : b.stock).trim();
   const p = {
     nom: clean(b.nom, 100),
-    categorie: clean(b.categorie, 40),
+    categorie: b.categorie ? (CAT_KEYS.includes(b.categorie) ? b.categorie : null) : 'general',
+    nomAr: clean(b.nomAr, 100),
+    descriptionAr: cleanMultiline(b.descriptionAr, 2000),
     prix: num(b.prix, NaN),
     ancienPrix: String(b.ancienPrix || '').trim() === '' ? null : num(b.ancienPrix, NaN),
     stock: stockRaw === '' ? null : Math.max(0, parseInt(stockRaw, 10)),
@@ -163,6 +178,7 @@ function readProductForm(b, existing) {
   };
   const errors = [];
   if (!p.nom) errors.push('Le nom du produit est obligatoire.');
+  if (p.categorie === null) errors.push('Catégorie invalide.');
   if (!Number.isFinite(p.prix) || p.prix <= 0) errors.push('Indiquez un prix valide (supérieur à 0).');
   if (p.ancienPrix !== null && (!Number.isFinite(p.ancienPrix) || p.ancienPrix <= p.prix)) errors.push('L’ancien prix doit être supérieur au prix actuel (ou laissez vide).');
   if (p.stock !== null && !Number.isFinite(p.stock)) errors.push('Le stock doit être un nombre entier (ou laissez vide : illimité).');
@@ -216,6 +232,86 @@ router.post('/produits/:id/supprimer', (req, res) => {
   const cur = isId(req.params.id) ? db.get('products').find({ id: req.params.id }).value() : null;
   if (cur) { removeProductImage(cur.photo); removeProductImage(cur.thumb); db.get('products').remove({ id: cur.id }).write(); flash(req, 'ok', 'Produit supprimé.'); }
   res.redirect('/admin/produits');
+});
+
+// ---------- Bannières promotionnelles ----------
+const bannerList = () => bn.sorted(db.get('banners').value()).sort((a, b) => a.emplacement.localeCompare(b.emplacement));
+const withBannerUpload = (req, res, next) => upload.single('image')(req, res, (err) => {
+  if (err) req.uploadError = err.code === 'LIMIT_FILE_SIZE' ? 'Image trop lourde (8 Mo maximum).' : 'Image refusée.';
+  else if (req.badFile) req.uploadError = 'Format d’image non accepté (JPG ou PNG uniquement).';
+  next();
+});
+function readBannerForm(b) {
+  const lien = b.lien && String(b.lien).trim() ? bn.safeLink(b.lien) : '';
+  const v = {
+    emplacement: bn.PLACEMENTS[b.emplacement] ? b.emplacement : null,
+    titre: clean(b.titre, 90), titreAr: clean(b.titreAr, 90),
+    sousTitre: clean(b.sousTitre, 140), sousTitreAr: clean(b.sousTitreAr, 140),
+    bouton: clean(b.bouton, 30), boutonAr: clean(b.boutonAr, 30),
+    lien, couleur: bn.COLORS[b.couleur] ? b.couleur : 'violet',
+    ordre: Math.min(999, Math.max(0, parseInt(b.ordre, 10) || 0)),
+    actif: b.actif === 'on', debut: clean(b.debut, 10), fin: clean(b.fin, 10)
+  };
+  const errors = [];
+  if (!v.emplacement) errors.push('Choisissez un emplacement.');
+  if (!v.titre) errors.push('Le titre (français) est obligatoire.');
+  if (lien === null) errors.push('Lien invalide : utilisez un chemin du site (exemple : /?cat=skincare) ou une adresse commençant par https://.');
+  if (v.debut && !bn.isDate(v.debut)) errors.push('Date de début invalide.');
+  if (v.fin && !bn.isDate(v.fin)) errors.push('Date de fin invalide.');
+  if (v.debut && v.fin && bn.isDate(v.debut) && bn.isDate(v.fin) && v.fin < v.debut) errors.push('La date de fin doit être postérieure à la date de début.');
+  return { v: { ...v, lien: lien || '' }, errors };
+}
+const bannerView = (res, status, title, b, errors) => res.status(status).render('admin/banner_form', { title, nav: 'banners', noindex: true, b, errors, placements: bn.PLACEMENTS, colors: bn.COLORS });
+
+router.get('/bannieres', (req, res) => {
+  const list = bannerList().map((b) => ({ ...b, statut: bn.statusOf(b) }));
+  page(res, 'banners', 'banners', { title: 'Bannières', banners: list, placements: bn.PLACEMENTS });
+});
+router.get('/bannieres/nouveau', (req, res) => bannerView(res, 200, 'Nouvelle bannière', { emplacement: 'hero', couleur: 'violet', actif: true, ordre: 0 }, []));
+router.post('/bannieres', withBannerUpload, verify, async (req, res, next) => {
+  try {
+    const { v, errors } = readBannerForm(req.body);
+    if (req.uploadError) errors.push(req.uploadError);
+    let img = {};
+    if (!errors.length && req.file && v.emplacement !== 'bar') { try { img = await saveBannerImage(req.file.buffer); } catch (e) { errors.push(e.message); } }
+    if (errors.length) return bannerView(res, 422, 'Nouvelle bannière', { ...v, id: null }, errors);
+    db.get('banners').push({ id: uuid(), ...v, image: img.image || null, createdAt: new Date().toISOString() }).write();
+    flash(req, 'ok', 'Bannière ajoutée.');
+    res.redirect('/admin/bannieres');
+  } catch (e) { next(e); }
+});
+router.get('/bannieres/:id', (req, res) => {
+  const b = isId(req.params.id) ? db.get('banners').find({ id: req.params.id }).value() : null;
+  if (!b) return res.status(404).render('404', { title: 'Bannière introuvable' });
+  bannerView(res, 200, 'Modifier la bannière', b, []);
+});
+router.post('/bannieres/:id', withBannerUpload, verify, async (req, res, next) => {
+  try {
+    const ref = isId(req.params.id) ? db.get('banners').find({ id: req.params.id }) : null;
+    const cur = ref && ref.value();
+    if (!cur) return res.status(404).render('404', { title: 'Bannière introuvable' });
+    const { v, errors } = readBannerForm(req.body);
+    if (req.uploadError) errors.push(req.uploadError);
+    let img = null;
+    if (!errors.length && req.file && v.emplacement !== 'bar') { try { img = await saveBannerImage(req.file.buffer); } catch (e) { errors.push(e.message); } }
+    if (errors.length) return bannerView(res, 422, 'Modifier la bannière', { ...cur, ...v }, errors);
+    let image = cur.image;
+    if (img) { removeBannerImage(cur.image); image = img.image; }
+    else if (req.body.supprimerImage === 'on' || v.emplacement === 'bar') { removeBannerImage(cur.image); image = null; }
+    ref.assign({ ...v, image }).write();
+    flash(req, 'ok', 'Bannière mise à jour.');
+    res.redirect('/admin/bannieres');
+  } catch (e) { next(e); }
+});
+router.post('/bannieres/:id/basculer', (req, res) => {
+  const ref = isId(req.params.id) ? db.get('banners').find({ id: req.params.id }) : null;
+  if (ref && ref.value()) { ref.assign({ actif: !ref.value().actif }).write(); flash(req, 'ok', ref.value().actif ? 'Bannière activée.' : 'Bannière désactivée.'); }
+  res.redirect('/admin/bannieres');
+});
+router.post('/bannieres/:id/supprimer', (req, res) => {
+  const cur = isId(req.params.id) ? db.get('banners').find({ id: req.params.id }).value() : null;
+  if (cur) { removeBannerImage(cur.image); db.get('banners').remove({ id: cur.id }).write(); flash(req, 'ok', 'Bannière supprimée.'); }
+  res.redirect('/admin/bannieres');
 });
 
 // ---------- Réglages ----------

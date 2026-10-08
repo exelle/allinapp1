@@ -9,5 +9,7 @@ module.exports = {
   UPLOAD_DIR: path.join(DATA_DIR, 'uploads'),
   PRODUCT_UPLOAD_DIR: path.join(DATA_DIR, 'uploads', 'products'),
   IS_PROD: process.env.NODE_ENV === 'production',
-  MAX_QTY: 20
+  BANNER_UPLOAD_DIR: path.join(DATA_DIR, 'uploads', 'banners'),
+  MAX_QTY: 20,
+  PAGE_SIZE: 20 // produits par page (plus de 15)
 };

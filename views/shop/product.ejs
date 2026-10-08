@@ -1,34 +1,35 @@
 <%- include('../partials/shop_top') %>
 <div class="sh-wrap">
-  <nav class="sh-crumbs" aria-label="Fil d’Ariane"><a href="/">Boutique</a><% if (p.categorie) { %> › <a href="/?cat=<%= encodeURIComponent(p.categorie) %>"><%= p.categorie %></a><% } %> › <%= p.nom %></nav>
+  <nav class="sh-crumbs" aria-label="<%= t('nav_shop') %>"><a href="/"><%= t('nav_shop') %></a> <%= t('crumb_sep') %> <a href="/?cat=<%= ck %>"><%= t('cat_' + ck) %></a> <%= t('crumb_sep') %> <%= pn(p) %></nav>
   <div class="sh-detail">
     <div class="sh-ph">
-      <% if (p.photo) { %><img src="<%= p.photo %>" alt="<%= p.nom %>" width="1000" height="1000"><% } else { %><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><% } %>
-      <% if (soldOut) { %><span class="sh-tag out">Épuisé</span><% } else if (p.ancienPrix) { %><span class="sh-tag">-<%= Math.round((1 - p.prix / p.ancienPrix) * 100) %>%</span><% } %>
+      <% if (p.photo) { %><img src="<%= p.photo %>" alt="<%= pn(p) %>" width="1000" height="1000"><% } else { %><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><% } %>
+      <% if (soldOut) { %><span class="sh-tag out"><%= t('sold_out') %></span><% } else if (p.ancienPrix) { %><span class="sh-tag" dir="ltr">-<%= Math.round((1 - p.prix / p.ancienPrix) * 100) %>%</span><% } %>
     </div>
     <div>
-      <% if (p.categorie) { %><span class="sh-cat"><%= p.categorie %></span><% } %>
-      <h1><%= p.nom %></h1>
-      <div class="sh-bigprice"><%= fmt.mad(p.prix) %><% if (p.ancienPrix) { %><s><%= fmt.mad(p.ancienPrix) %></s><span class="sh-save">Vous économisez <%= fmt.mad(p.ancienPrix - p.prix) %></span><% } %></div>
-      <% if (soldOut) { %><p class="sh-stock">Ce produit est momentanément épuisé.</p>
-      <% } else if (p.stock !== null && p.stock !== undefined && p.stock <= 5) { %><p class="sh-stock">Plus que <%= p.stock %> en stock</p><% } %>
-      <% if (p.description) { %><div class="sh-desc"><%= p.description %></div><% } %>
+      <span class="sh-cat"><%= t('cat_' + ck) %></span>
+      <h1><%= pn(p) %></h1>
+      <div class="sh-bigprice"><%= mad(p.prix) %><% if (p.ancienPrix) { %><s><%= mad(p.ancienPrix) %></s><span class="sh-save"><%= t('save', { amount: mad(p.ancienPrix - p.prix) }) %></span><% } %></div>
+      <% if (soldOut) { %><p class="sh-stock"><%= t('sold_out_msg') %></p>
+      <% } else if (p.stock !== null && p.stock !== undefined && p.stock <= 5) { %><p class="sh-stock"><%= t('only_left', { n: p.stock }) %></p><% } %>
+      <% if (pd(p)) { %><div class="sh-desc"><%= pd(p) %></div><% } %>
       <% if (!soldOut) { %>
       <form method="POST" action="/panier/ajouter">
         <input type="hidden" name="_csrf" value="<%= csrf() %>">
         <input type="hidden" name="productId" value="<%= p.id %>">
         <div class="sh-buy">
-          <div class="sh-qty"><button type="button" data-step="-1" aria-label="Diminuer la quantité">−</button><input type="number" name="qte" value="1" min="1" max="<%= maxQty %>" aria-label="Quantité"><button type="button" data-step="1" aria-label="Augmenter la quantité">+</button></div>
-          <button type="submit" class="sh-btn" style="flex:1">Ajouter au panier</button>
+          <div class="sh-qty" dir="ltr"><button type="button" data-step="-1" aria-label="<%= t('qty_minus') %>">−</button><input type="number" name="qte" value="1" min="1" max="<%= maxQty %>" aria-label="<%= t('qty') %>"><button type="button" data-step="1" aria-label="<%= t('qty_plus') %>">+</button></div>
+          <button type="submit" class="sh-btn" style="flex:1"><%= t('add_cart') %></button>
         </div>
-        <button type="submit" name="next" value="commande" class="sh-btn ghost block">Commander maintenant</button>
+        <button type="submit" name="next" value="commande" class="sh-btn ghost block"><%= t('order_now') %></button>
       </form>
       <% } %>
-      <div class="sh-reassure" style="margin-top:18px"><div>Paiement à la livraison</div><div>Aucun compte à créer</div><div>Suivi de commande en ligne</div></div>
+      <div class="sh-reassure" style="margin-top:18px"><div><%= t('perk_cod') %></div><div><%= t('perk_nosignup') %></div><div><%= t('perk_track') %></div></div>
     </div>
   </div>
+  <% if (inline) { %><div class="sh-bn-wrap" style="margin-top:0"><%- include('../partials/banner_inline', { b: inline }) %></div><% } %>
   <% if (others.length) { %>
-    <h2 class="sh-h2">Vous aimerez aussi</h2>
+    <h2 class="sh-h2"><%= t('similar') %></h2>
     <div class="sh-grid" style="margin-bottom:40px"><% others.forEach(o => { %><%- include('../partials/product_card', { p: o }) %><% }) %></div>
   <% } %>
 </div>

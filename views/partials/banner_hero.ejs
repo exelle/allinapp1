@@ -1,0 +1,11 @@
+<div class="sh-carousel" data-carousel data-interval="5500" role="region" aria-roledescription="carousel" aria-label="<%= t('promos') %>">
+  <div class="sh-slides">
+  <% heroes.forEach((b, i) => { const tag = b.lien ? 'a' : 'div'; %>
+    <<%= tag %> data-slide class="sh-slide bn-<%= b.couleur %><%= i === 0 ? ' on' : '' %>"<% if (b.lien) { %> href="<%= b.lien %>"<%- linkAttrs(b.lien) %><% } %><%- i === 0 ? '' : ' aria-hidden="true"' %>>
+      <% if (b.image) { %><img class="sh-bn-img" src="<%= b.image %>" alt=""><span class="sh-bn-shade"></span><% } %>
+      <span class="sh-bn-txt"><b class="sh-bn-title"><%= bl(b, 'titre') %></b><% if (bl(b, 'sousTitre')) { %><span class="sh-bn-sub"><%= bl(b, 'sousTitre') %></span><% } %><% if (bl(b, 'bouton')) { %><span class="sh-btn sh-bn-btn"><%= bl(b, 'bouton') %></span><% } %></span>
+    </<%= tag %>>
+  <% }) %>
+  </div>
+  <div class="sh-dots" data-dots></div>
+</div>

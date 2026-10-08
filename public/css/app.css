@@ -65,15 +65,15 @@ form.inline{display:inline;}
 
 /* ---------- Composants communs boutique / back-office ---------- */
 :focus-visible{outline:2px solid var(--accent-light); outline-offset:2px;}
-.skip{position:absolute; left:-9999px; top:0;}
-.skip:focus{left:8px; top:8px; z-index:100; background:#fff; padding:8px 12px; border-radius:6px;}
+.skip{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap;}
+.skip:focus{width:auto; height:auto; clip-path:none; inset-inline-start:8px; top:8px; z-index:400; background:#fff; padding:8px 12px; border-radius:6px;}
 textarea,select,input[type=email],input[type=tel],input[type=search]{
   width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:6px;
   background:var(--bg); color:var(--text); font-size:15px; font-family:inherit; font-weight:300;
 }
 textarea{resize:vertical;}
 input[type=checkbox]{width:auto; margin-right:6px; accent-color:var(--accent);}
-.hp{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;}
+.hp{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap;}
 .pill{display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:400; white-space:nowrap;}
 .pill.nouvelle{background:rgba(98,50,175,.1); color:var(--accent);}
 .pill.confirmee{background:rgba(47,111,179,.12); color:#2F6FB3;}

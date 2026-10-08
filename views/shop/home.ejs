@@ -1,31 +1,23 @@
 <%- include('../partials/shop_top') %>
-<% if (!q && !cat && page === 1) { %>
-<section class="sh-hero"><div class="in">
-  <h1>Tout ce qu’il vous faut, <b>livré chez vous</b>.</h1>
-  <p>Commandez en quelques clics et payez uniquement à la réception.</p>
-  <a class="sh-btn" href="#catalogue">Découvrir la boutique</a>
-  <div class="sh-perks" style="margin-top:18px"><span>Paiement à la livraison</span><span>Aucun compte à créer</span><span>Suivi de commande en ligne</span></div>
-</div></section>
-<% } %>
+<%- include('../partials/categories_row') %>
+<% if (strip.length) { %><%- include('../partials/product_strip') %><% } %>
+<% if (heroes.length) { %><div class="sh-wrap sh-bn-wrap"><%- include('../partials/banner_hero') %></div><% } %>
+<% if (inline) { %><div class="sh-wrap sh-bn-wrap"><%- include('../partials/banner_inline', { b: inline }) %></div><% } %>
 <section class="sh-section" id="catalogue"><div class="sh-wrap">
   <div class="sh-bar">
     <form method="GET" action="/" class="sh-search" role="search">
       <% if (cat) { %><input type="hidden" name="cat" value="<%= cat %>"><% } %>
-      <input type="search" name="q" value="<%= q %>" placeholder="Rechercher un produit…" aria-label="Rechercher un produit">
+      <input type="search" name="q" value="<%= q %>" placeholder="<%= t('search_ph') %>" aria-label="<%= t('search_aria') %>">
     </form>
-    <% if (categories.length > 1) { %>
-    <nav class="sh-chips" aria-label="Catégories">
-      <a href="/<%= q ? '?q=' + encodeURIComponent(q) : '' %>" class="<%= !cat ? 'on' : '' %>">Tout</a>
-      <% categories.forEach(c => { %><a href="/?cat=<%= encodeURIComponent(c) %><%= q ? '&q=' + encodeURIComponent(q) : '' %>" class="<%= cat === c ? 'on' : '' %>"><%= c %></a><% }) %>
-    </nav>
-    <% } %>
+    <% if (cat || q) { %><a class="sh-btn ghost" style="padding:9px 16px" href="/"><%= t('see_all') %></a><% } %>
   </div>
+  <div class="sh-grid-head"><h2 class="sh-h2" style="margin:0"><%= cat ? t('cat_' + cat) : t('all_products') %></h2><span class="sh-count"><%= t('products_n', { n: total }) %></span></div>
   <% if (!products.length) { %>
-    <div class="sh-empty"><%= (q || cat) ? 'Aucun produit ne correspond à votre recherche.' : 'La boutique ouvre bientôt. Revenez nous voir !' %><% if (q || cat) { %><br><br><a class="sh-btn ghost" href="/">Voir tous les produits</a><% } %></div>
+    <div class="sh-empty"><%= (q || cat) ? (cat && !q ? t('no_products_cat') : t('no_match')) : t('coming_soon') %><% if (q || cat) { %><br><br><a class="sh-btn ghost" href="/"><%= t('see_all_products') %></a><% } %></div>
   <% } else { %>
-    <div class="sh-grid"><% products.forEach(p => { %><%- include('../partials/product_card', { p }) %><% }) %></div>
-    <% const pagerBase = '/' + ((cat || q) ? '?' + [cat ? 'cat=' + encodeURIComponent(cat) : '', q ? 'q=' + encodeURIComponent(q) : ''].filter(Boolean).join('&') : ''); %>
-    <%- include('../partials/pager', { pagerBase }) %>
+    <div class="sh-grid" id="grid" data-infinite data-url="<%= base %>" data-next="<%= nextPage || '' %>"><%- include('../partials/product_grid_items', { products }) %></div>
+    <div class="sh-more" data-more<%- nextPage ? '' : ' hidden' %>><button type="button" class="sh-btn ghost" data-more-btn data-loading="<%= t('loading') %>"><%= t('load_more') %></button></div>
+    <div class="pager-nojs"><% const pagerBase = base; %><%- include('../partials/pager', { pagerBase }) %></div>
   <% } %>
 </div></section>
 <%- include('../partials/shop_bottom') %>

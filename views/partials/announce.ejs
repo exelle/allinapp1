@@ -1,0 +1,7 @@
+<div class="sh-announce" data-carousel data-interval="4500"<%- inertAttr %>>
+<% if (bars.length) { bars.forEach((b, i) => { const cls = 'sh-bar-item bn-' + b.couleur + (i === 0 ? ' on' : ''); %>
+  <% if (b.lien) { %><a data-slide class="<%= cls %>" href="<%= b.lien %>"<%- linkAttrs(b.lien) %>><%= bl(b, 'titre') %></a><% } else { %><span data-slide class="<%= cls %>"><%= bl(b, 'titre') %></span><% } %>
+<% }) } else { %>
+  <span data-slide class="sh-bar-item bn-violet on"><%= t('announce_cod') %><% if (settings.livraisonGratuiteDes > 0) { %> · <%= t('announce_free', { amount: mad(settings.livraisonGratuiteDes) }) %><% } %></span>
+<% } %>
+</div>

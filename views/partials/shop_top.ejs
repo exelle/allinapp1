@@ -1,18 +1,21 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="<%= lang %>" dir="<%= dir %>">
 <head>
 <%- include('head') %>
 </head>
 <body class="shop">
-<a class="skip" href="#main">Aller au contenu</a>
-<div class="sh-announce">Paiement à la livraison<% if (settings.livraisonGratuiteDes > 0) { %> · Livraison offerte dès <%= fmt.mad(settings.livraisonGratuiteDes) %><% } %></div>
-<header class="sh-header"><div class="in">
-  <a class="brand" href="/" aria-label="All in app — accueil"><img src="/logo.svg" alt="" width="38" height="38"><div><div class="brand-name">All in app</div><div class="brand-tagline sh-brandtag">The all in one startup</div></div></a>
-  <nav class="sh-nav" aria-label="Navigation principale">
-    <a href="/" class="hide-sm">Boutique</a>
-    <a href="/suivi" class="hide-sm">Suivre ma commande</a>
-    <a href="/panier" class="sh-cart" aria-label="Panier, <%= cartCount %> article(s)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 8H6"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg><% if (cartCount > 0) { %><span class="sh-badge"><%= cartCount %></span><% } %></a>
+<% const inertAttr = langChosen ? '' : ' inert'; const other = lang === 'ar' ? 'fr' : 'ar'; %>
+<% if (!langChosen) { %><%- include('lang_overlay') %><% } %>
+<a class="skip" href="#main"<%- inertAttr %>><%= t('skip') %></a>
+<%- include('announce', { inertAttr }) %>
+<header class="sh-header"<%- inertAttr %>><div class="in">
+  <a class="brand" href="/" aria-label="All in app"><img src="/logo.svg" alt="" width="38" height="38"><div><div class="brand-name">All in app</div><div class="brand-tagline sh-brandtag">The all in one startup</div></div></a>
+  <nav class="sh-nav" aria-label="<%= t('nav_shop') %>">
+    <a href="/" class="hide-sm"><%= t('nav_shop') %></a>
+    <a href="/suivi" class="hide-sm"><%= t('nav_track') %></a>
+    <a class="sh-lang" href="/langue/<%= other %>?next=<%= encodeURIComponent(currentUrl) %>" lang="<%= other %>" hreflang="<%= other %>" aria-label="<%= t('lang_switch_aria') %>"><%= t('lang_switch') %></a>
+    <a href="/panier" class="sh-cart" aria-label="<%= t('cart_aria', { n: cartCount }) %>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 8H6"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg><% if (cartCount > 0) { %><span class="sh-badge"><%= cartCount %></span><% } %></a>
   </nav>
 </div></header>
-<main id="main">
-<% if (flash) { %><div class="sh-wrap" style="padding-top:14px"><div class="<%= flash.type === 'error' ? 'error' : 'success' %>" role="status"><%= flash.msg %><% if (flash.type !== 'error' && cartCount > 0) { %> <a href="/panier">Voir le panier</a><% } %></div></div><% } %>
+<main id="main"<%- inertAttr %>>
+<% if (flash) { %><div class="sh-wrap" style="padding-top:14px"><div class="<%= flash.type === 'error' ? 'error' : 'success' %>" role="status"><%= flash.msg %><% if (flash.type !== 'error' && cartCount > 0) { %> <a href="/panier"><%= t('view_cart') %></a><% } %></div></div><% } %>

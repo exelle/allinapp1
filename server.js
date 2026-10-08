@@ -6,10 +6,13 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
-const { IS_PROD, UPLOAD_DIR, PRODUCT_UPLOAD_DIR } = require('./config');
+const { IS_PROD, UPLOAD_DIR, PRODUCT_UPLOAD_DIR, BANNER_UPLOAD_DIR } = require('./config');
 const { ensureAdmin, getSettings } = require('./db');
 const csrf = require('./lib/csrf');
 const fmt = require('./lib/format');
+const i18n = require('./lib/i18n');
+const banners = require('./lib/banners');
+const { KEYS: CAT_KEYS } = require('./lib/categories');
 
 // Contrôles de démarrage en production : on refuse de démarrer avec une config dangereuse.
 if (IS_PROD && (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 24)) {
@@ -17,6 +20,7 @@ if (IS_PROD && (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length
   process.exit(1);
 }
 fs.mkdirSync(PRODUCT_UPLOAD_DIR, { recursive: true });
+fs.mkdirSync(BANNER_UPLOAD_DIR, { recursive: true });
 try { ensureAdmin(); } catch (e) { console.error('[boutique] ' + e.message); process.exit(1); }
 
 const app = express();
@@ -66,16 +70,36 @@ app.use((req, res, next) => {
   if (req.session && req.session.flash) { res.locals.flash = req.session.flash; delete req.session.flash; }
   next();
 });
+// Langue de la vitrine (cookie « aia_lang » posé par l'écran de choix) : français par défaut.
+app.use((req, res, next) => {
+  const m = /(?:^|;\s*)aia_lang=(fr|ar)(?:;|$)/.exec(req.headers.cookie || '');
+  const lang = m ? m[1] : 'fr';
+  const { t, th } = i18n.make(lang);
+  Object.assign(res.locals, {
+    lang, dir: lang === 'ar' ? 'rtl' : 'ltr', langChosen: !!m, t, th,
+    mad: (n) => fmt.mad(n, lang), dt: (d) => fmt.dateTimeL(d, lang), dd: (d) => fmt.dateL(d, lang),
+    pn: (p) => (lang === 'ar' && p.nomAr) || p.nom,
+    pd: (p) => (lang === 'ar' && p.descriptionAr) || p.description || '',
+    catLabel: (k) => t('cat_' + (CAT_KEYS.includes(k) ? k : 'general')),
+    bl: (b, f) => (lang === 'ar' && b[f + 'Ar']) || b[f] || '',
+    currentUrl: req.originalUrl.split('#')[0],
+    linkAttrs: banners.linkAttrs,
+    bars: banners.live('bar')
+  });
+  res.vary('Cookie');
+  next();
+});
 app.use(csrf.attach);
 app.use(csrf.verifyUnlessMultipart);
 
 app.use(require('./routes/shop'));
 app.use('/admin', require('./routes/admin'));
 
-app.use((req, res) => res.status(404).render('404', { title: 'Page introuvable' }));
+app.use((req, res) => res.status(404).render('404', { title: res.locals.t('e404_title') }));
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   console.error('[boutique] erreur :', err);
-  res.status(500).render('error', { title: 'Erreur', message: 'Une erreur est survenue. Réessayez dans un instant.' });
+  const T = res.locals.t || i18n.make('fr').t;
+  res.status(500).render('error', { title: T('err_title'), message: T('err_msg') });
 });
 
 const PORT = process.env.PORT || 3000;

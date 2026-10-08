@@ -1,12 +1,12 @@
 <% const _out = (p.stock !== null && p.stock !== undefined && p.stock <= 0); %>
 <a class="sh-card" href="/produit/<%= p.id %>">
   <div class="sh-ph">
-    <% if (p.thumb) { %><img src="<%= p.thumb %>" alt="<%= p.nom %>" loading="lazy" width="480" height="480"><% } else { %><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><% } %>
-    <% if (_out) { %><span class="sh-tag out">Épuisé</span><% } else if (p.ancienPrix) { %><span class="sh-tag">-<%= Math.round((1 - p.prix / p.ancienPrix) * 100) %>%</span><% } %>
+    <% if (p.thumb) { %><img src="<%= p.thumb %>" alt="<%= pn(p) %>" loading="lazy" width="480" height="480"><% } else { %><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><% } %>
+    <% if (_out) { %><span class="sh-tag out"><%= t('sold_out') %></span><% } else if (p.ancienPrix) { %><span class="sh-tag" dir="ltr">-<%= Math.round((1 - p.prix / p.ancienPrix) * 100) %>%</span><% } %>
   </div>
   <div class="sh-info">
-    <% if (p.categorie) { %><span class="sh-cat"><%= p.categorie %></span><% } %>
-    <span class="sh-name"><%= p.nom %></span>
-    <span class="sh-price"><%= fmt.mad(p.prix) %><% if (p.ancienPrix) { %><s><%= fmt.mad(p.ancienPrix) %></s><% } %></span>
+    <span class="sh-cat"><%= catLabel(p.categorie) %></span>
+    <span class="sh-name"><%= pn(p) %></span>
+    <span class="sh-price"><%= mad(p.prix) %><% if (p.ancienPrix) { %><s><%= mad(p.ancienPrix) %></s><% } %></span>
   </div>
 </a>

@@ -9,13 +9,17 @@
     <input id="photo" type="file" name="photo" accept="image/jpeg,image/png"></div>
   <div class="grid">
     <div class="field"><label for="nom">Nom du produit</label><input id="nom" type="text" name="nom" value="<%= val('nom') %>" required maxlength="100"></div>
-    <div class="field"><label for="cat">Catégorie (facultatif)</label><input id="cat" type="text" name="categorie" value="<%= val('categorie') %>" maxlength="40"></div>
+    <div class="field"><label for="cat">Catégorie</label><select id="cat" name="categorie"><% cats.forEach(c => { %><option value="<%= c.key %>" <%= val('categorie', 'general') === c.key ? 'selected' : '' %>><%= t('cat_' + c.key) %></option><% }) %></select></div>
     <div class="field"><label for="prix">Prix (DH)</label><input id="prix" type="number" name="prix" value="<%= val('prix') %>" step="0.01" min="0.01" required></div>
     <div class="field"><label for="ap">Ancien prix barré (DH, facultatif)</label><input id="ap" type="number" name="ancienPrix" value="<%= val('ancienPrix') %>" step="0.01" min="0"></div>
     <div class="field"><label for="stock">Stock (laisser vide = illimité)</label><input id="stock" type="number" name="stock" value="<%= val('stock') %>" step="1" min="0"></div>
     <div class="field" style="align-self:end"><label style="display:flex; align-items:center; font-size:14px; color:var(--text)"><input type="checkbox" name="actif" <%= (isNew || p.actif) ? 'checked' : '' %>> Visible dans la boutique</label></div>
   </div>
   <div class="field"><label for="desc">Description</label><textarea id="desc" name="description" rows="6" maxlength="2000"><%= val('description') %></textarea></div>
+  <h2 style="margin-top:8px">Version arabe (facultatif)</h2>
+  <div class="field"><label for="nar">Nom en arabe</label><input id="nar" type="text" dir="rtl" lang="ar" name="nomAr" value="<%= val('nomAr') %>" maxlength="100"></div>
+  <div class="field"><label for="dar">Description en arabe</label><textarea id="dar" dir="rtl" lang="ar" name="descriptionAr" rows="4" maxlength="2000"><%= val('descriptionAr') %></textarea></div>
+  <p class="sub" style="margin-bottom:14px">Si ces champs restent vides, les clients qui choisissent l’arabe voient la version française.</p>
   <input type="hidden" name="_csrf" value="<%= csrf() %>">
   <button type="submit"><%= isNew ? 'Ajouter le produit' : 'Enregistrer' %></button>
 </form>

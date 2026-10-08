@@ -1,25 +1,26 @@
 </main>
-<footer class="sh-footer"><div class="sh-wrap">
+<footer class="sh-footer"<%- langChosen ? '' : ' inert' %>><div class="sh-wrap">
   <div class="cols">
     <div>
       <div class="brand" style="margin-bottom:10px"><img src="/logo.svg" alt="" width="34" height="34"><div class="brand-name">All in app</div></div>
-      <p style="max-width:320px;margin:0">Paiement à la livraison : vous réglez à la réception de votre commande.</p>
+      <p style="max-width:320px;margin:0"><%= t('foot_tagline') %></p>
     </div>
-    <div><h3>Informations</h3><ul>
-      <li><a href="/suivi">Suivre ma commande</a></li>
-      <li><a href="/page/livraison-retours">Livraison et retours</a></li>
-      <li><a href="/page/cgv">Conditions générales de vente</a></li>
+    <div><h3><%= t('foot_info') %></h3><ul>
+      <li><a href="/suivi"><%= t('foot_track') %></a></li>
+      <li><a href="/page/livraison-retours"><%= t('foot_delivery') %></a></li>
+      <li><a href="/page/cgv"><%= t('foot_cgv') %></a></li>
     </ul></div>
-    <div><h3>Contact</h3><ul>
-      <% if (settings.contactTel) { %><li><a href="tel:<%= settings.contactTel %>"><%= settings.contactTel %></a></li><% } %>
+    <div><h3><%= t('foot_contact') %></h3><ul>
+      <% if (settings.contactTel) { %><li><a href="tel:<%= settings.contactTel %>" dir="ltr"><%= settings.contactTel %></a></li><% } %>
       <% if (settings.contactWhatsapp) { %><li><a href="https://wa.me/<%= fmt.waNumber(settings.contactWhatsapp) %>" rel="noopener" target="_blank">WhatsApp</a></li><% } %>
       <% if (settings.contactEmail) { %><li><a href="mailto:<%= settings.contactEmail %>"><%= settings.contactEmail %></a></li><% } %>
-      <li><a href="/page/mentions-legales">Mentions légales</a></li>
-      <li><a href="/page/confidentialite">Confidentialité</a></li>
+      <li><a href="/page/mentions-legales"><%= t('foot_legal') %></a></li>
+      <li><a href="/page/confidentialite"><%= t('foot_privacy') %></a></li>
     </ul></div>
   </div>
-  <div class="copy">© <%= new Date().getFullYear() %> <%= settings.raisonSociale %> — Tous droits réservés.</div>
+  <div class="copy">© <%= new Date().getFullYear() %> <%= settings.raisonSociale %> — <%= t('foot_rights') %></div>
 </div></footer>
 <script src="/js/app.js" defer></script>
+<script src="/js/promo.js" defer></script>
 </body>
 </html>

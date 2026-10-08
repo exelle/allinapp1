@@ -3,7 +3,7 @@
 <div class="actions-row" style="justify-content:space-between; margin-bottom:14px">
   <div><a href="/admin/commandes" style="font-size:13px">← Commandes</a>
     <h1 style="margin-top:6px"><%= order.ref %> <span class="pill <%= order.statut %>" style="vertical-align:middle"><%= fmt.STATUTS[order.statut] %></span></h1>
-    <div class="sub">Passée le <%= fmt.dateTime(order.createdAt) %> · Paiement à la livraison</div></div>
+    <div class="sub">Passée le <%= fmt.dateTime(order.createdAt) %> · Paiement à la livraison · Langue du client : <%= order.lang === 'ar' ? 'arabe (العربية)' : 'français' %></div></div>
   <div class="actions-row">
     <a class="ghost btn" href="tel:<%= order.client.telephone %>">📞 Appeler</a>
     <a class="ghost btn" href="https://wa.me/<%= fmt.waNumber(order.client.telephone) %>" target="_blank" rel="noopener">WhatsApp</a>

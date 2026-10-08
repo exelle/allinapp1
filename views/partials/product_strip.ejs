@@ -1,0 +1,6 @@
+<section class="sh-wrap sh-stripwrap" aria-label="<%= t('strip_title') %>">
+  <h2 class="sh-h2 sh-strip-title"><%= t('strip_title') %></h2>
+  <div class="sh-strip" data-strip dir="ltr" tabindex="0">
+    <div class="sh-strip-track"><% strip.forEach(p => { %><div class="sh-strip-item" dir="<%= dir %>"><%- include('product_card', { p }) %></div><% }) %></div>
+  </div>
+</section>
